@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>रफ़्तार | Hindi TypeRacer</title>
-    <link rel="stylesheet" href="style.css">
+    <!-- <link rel="stylesheet" href="style.css"> -->
     <script src="https://js.puter.com/v2/"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,6 +14,620 @@
         rel="stylesheet">
     <!-- Confetti Library -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --bg-dark: #070b14;
+            --bg-card: rgba(15, 23, 42, 0.85);
+            --primary: #a855f7;
+            --primary-glow: rgba(168, 85, 247, 0.4);
+            --secondary: #22d3ee;
+            --accent: #4ade80;
+            --error: #f87171;
+            --warning: #facc15;
+            --text-main: #f1f5f9;
+            --text-sub: #94a3b8;
+            --track-bg: rgba(30, 41, 59, 0.5);
+            --font-hindi: 'Mukta', sans-serif;
+            --font-ui: 'Outfit', sans-serif;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-ui);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Background */
+        .bg-particles {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+            background:
+                radial-gradient(ellipse at 20% 30%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(34, 211, 238, 0.1) 0%, transparent 50%),
+                linear-gradient(180deg, var(--bg-dark) 0%, #0f172a 100%);
+        }
+
+        .bg-particles::before,
+        .bg-particles::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .bg-particles::before {
+            width: 400px;
+            height: 400px;
+            background: rgba(168, 85, 247, 0.1);
+            top: 10%;
+            left: 5%;
+        }
+
+        .bg-particles::after {
+            width: 300px;
+            height: 300px;
+            background: rgba(34, 211, 238, 0.1);
+            bottom: 10%;
+            right: 10%;
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-30px) rotate(5deg);
+            }
+        }
+
+        .app-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .logo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            font-size: 2.5rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        header h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            letter-spacing: -2px;
+            background: linear-gradient(135deg, #fff, var(--primary), var(--secondary));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tagline {
+            color: var(--text-sub);
+            font-size: 1rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 0.25rem;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-box {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .stat-box:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-box.highlight {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .stat-icon {
+            font-size: 1.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .stat-value small {
+            font-size: 0.7rem;
+            font-weight: 400;
+            color: var(--text-sub);
+        }
+
+        /* Race Track */
+        .race-track {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .lane {
+            display: grid;
+            grid-template-columns: 40px 70px 1fr 30px;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .lane:last-child {
+            border-bottom: none;
+        }
+
+        .racer-avatar {
+            font-size: 1.5rem;
+            text-align: center;
+        }
+
+        .racer-name {
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            font-weight: 500;
+        }
+
+        .track-line {
+            height: 8px;
+            background: var(--track-bg);
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .track-line::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(90deg, transparent 0, transparent 20px, rgba(255, 255, 255, 0.03) 20px, rgba(255, 255, 255, 0.03) 40px);
+        }
+
+        .car {
+            position: absolute;
+            top: 50%;
+            left: 0%;
+            transform: translate(-50%, -50%);
+            font-size: 1.25rem;
+            transition: left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
+        }
+
+        .user-car {
+            font-size: 1.5rem;
+            filter: drop-shadow(0 0 10px var(--primary-glow));
+            z-index: 2;
+        }
+
+        .user-lane {
+            background: linear-gradient(90deg, rgba(168, 85, 247, 0.1), transparent);
+            border-radius: 8px;
+            margin: -0.25rem -0.5rem;
+            padding: 0.75rem 0.5rem;
+        }
+
+        .finish-flag {
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        /* Typing Container */
+        .typing-container {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            flex-grow: 1;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .text-display {
+            font-family: var(--font-hindi);
+            font-size: 1.6rem;
+            line-height: 2;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            min-height: 120px;
+            flex-grow: 1;
+            user-select: none;
+            border: 2px solid transparent;
+            transition: border-color 0.3s;
+        }
+
+        .text-display.active {
+            border-color: var(--primary);
+        }
+
+        /* Character styles */
+        .char {
+            color: var(--text-sub);
+            position: relative;
+            transition: all 0.1s;
+        }
+
+        .char.correct {
+            color: var(--accent);
+        }
+
+        .char.incorrect {
+            color: var(--error);
+            background: rgba(248, 113, 113, 0.25);
+            border-radius: 2px;
+        }
+
+        .char.current {
+            color: var(--text-main);
+            border-bottom: 3px solid var(--primary);
+        }
+
+        /* Word-level styles */
+        .word {
+            display: inline;
+            padding: 4px 2px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            margin: 0 1px;
+        }
+
+        .word.current-word {
+            background: rgba(168, 85, 247, 0.2);
+            box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.4);
+        }
+
+        .word.completed-word {
+            opacity: 0.5;
+        }
+
+        .input-area {
+            margin-top: 1rem;
+        }
+
+        .main-input {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid transparent;
+            color: var(--text-main);
+            font-family: var(--font-hindi);
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            caret-color: var(--primary);
+        }
+
+        .main-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 25px var(--primary-glow);
+        }
+
+        .main-input:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* Shake animation */
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20%,
+            60% {
+                transform: translateX(-5px);
+            }
+
+            40%,
+            80% {
+                transform: translateX(5px);
+            }
+        }
+
+        .main-input.shake {
+            animation: shake 0.3s ease-out;
+            border-color: var(--error) !important;
+        }
+
+        .keyboard-hint {
+            text-align: center;
+            margin-top: 0.75rem;
+            color: var(--text-sub);
+            font-size: 0.8rem;
+        }
+
+        .keyboard-hint kbd {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.75rem;
+        }
+
+        /* Overlays */
+        .loading-overlay,
+        .countdown-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(7, 11, 20, 0.95);
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 16px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .loading-overlay.active,
+        .countdown-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(168, 85, 247, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .countdown-number {
+            font-size: 8rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-shadow: 0 0 50px var(--primary-glow);
+            animation: countPulse 1s ease-out;
+        }
+
+        @keyframes countPulse {
+            0% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(7, 11, 20, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            backdrop-filter: blur(8px);
+            opacity: 1;
+            transition: opacity 0.4s;
+        }
+
+        .modal.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2.5rem;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 0 60px var(--primary-glow);
+            transform: scale(1) translateY(0);
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            max-width: 420px;
+            width: 90%;
+        }
+
+        .modal.hidden .modal-content {
+            transform: scale(0.8) translateY(20px);
+        }
+
+        .trophy-icon {
+            font-size: 4rem;
+            margin-bottom: 0.5rem;
+            animation: bounce 0.6s ease-out;
+        }
+
+        @keyframes bounce {
+            0% {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+
+            50% {
+                transform: translateY(10px);
+            }
+
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-content h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .position-text {
+            color: var(--text-sub);
+            margin-bottom: 1.5rem;
+        }
+
+        .results-stats {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .result-stat {
+            text-align: center;
+        }
+
+        .result-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .result-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .result-label {
+            font-size: 0.75rem;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .primary-btn {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: white;
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-family: var(--font-ui);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px var(--primary-glow);
+        }
+
+        .shortcut-hint {
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            color: var(--text-sub);
+        }
+
+        .shortcut-hint kbd {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem 0;
+            color: var(--text-sub);
+            font-size: 0.8rem;
+            margin-top: auto;
+        }
+    </style>
 </head>
 
 <body>
@@ -162,7 +776,423 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // DOM Elements
+        const textDisplay = document.getElementById('textDisplay');
+        const typeInput = document.getElementById('typeInput');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const countdownOverlay = document.getElementById('countdownOverlay');
+        const countdownNumber = document.getElementById('countdownNumber');
+        const userCar = document.getElementById('userCar');
+        const timerEl = document.getElementById('timer');
+        const wpmDisplayEl = document.getElementById('wpmDisplay');
+        const liveAccuracyEl = document.getElementById('liveAccuracy');
+        const livePositionEl = document.getElementById('livePosition');
+
+        // Modal
+        const resultsModal = document.getElementById('resultsModal');
+        const modalRestartBtn = document.getElementById('modalRestartBtn');
+        const finalWpmEl = document.getElementById('finalWpm');
+        const finalAccuracyEl = document.getElementById('finalAccuracy');
+        const finalTimeEl = document.getElementById('finalTime');
+        const positionTextEl = document.getElementById('positionText');
+        const trophyIconEl = document.getElementById('trophyIcon');
+        const resultTitleEl = document.getElementById('resultTitle');
+
+        // Game State
+        let words = [];
+        let currentWordIndex = 0;
+        let startTime = null;
+        let timerInterval = null;
+        let isRacing = false;
+        let totalKeystrokes = 0;
+        let errorCount = 0;
+        let correctWords = 0;
+        let userProgress = 0;
+
+        // Bots
+        const bots = [
+            { id: 'bot1Car', base: 35, progress: 0, interval: null },
+            { id: 'bot2Car', base: 50, progress: 0, interval: null },
+            { id: 'bot3Car', base: 65, progress: 0, interval: null }
+        ];
+
+        const fallbackTexts = [
+            "भारत एक महान देश है। यहाँ अनेक भाषाएँ बोली जाती हैं। हमें अपनी संस्कृति पर गर्व है।",
+            "समय का सदुपयोग सफलता की कुंजी है। हर पल को महत्वपूर्ण समझना चाहिए।",
+            "परिश्रम से ही सफलता मिलती है। बिना मेहनत कुछ भी हासिल नहीं होता।",
+            "प्रकृति हमारी सबसे अच्छी शिक्षक है। इससे हमें बहुत कुछ सीखना चाहिए।",
+            "शिक्षा सबसे शक्तिशाली हथियार है। इससे हम दुनिया बदल सकते हैं।"
+        ];
+
+        // --- Sound Effects ---
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx;
+
+        function playSound(type) {
+            if (!audioCtx) audioCtx = new AudioContext();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'error') {
+                osc.frequency.value = 200; osc.type = 'sawtooth';
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+            } else if (type === 'correct') {
+                osc.frequency.value = 600; osc.type = 'sine';
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.08);
+            } else if (type === 'word') {
+                osc.frequency.value = 880; osc.type = 'sine';
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+            } else if (type === 'countdown') {
+                osc.frequency.value = 440; osc.type = 'sine';
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+            } else if (type === 'go') {
+                osc.frequency.value = 880; osc.type = 'sine';
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+            } else if (type === 'finish') {
+                [523, 659, 784].forEach((freq, i) => {
+                    const o = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    o.connect(g); g.connect(audioCtx.destination);
+                    o.frequency.value = freq; o.type = 'sine';
+                    g.gain.setValueAtTime(0.1, audioCtx.currentTime + i * 0.1);
+                    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i * 0.1 + 0.3);
+                    o.start(audioCtx.currentTime + i * 0.1);
+                    o.stop(audioCtx.currentTime + i * 0.1 + 0.3);
+                });
+            }
+        }
+
+        // --- Core Game ---
+
+        async function fetchNewRace() {
+            resultsModal.classList.add('hidden');
+            loadingOverlay.classList.add('active');
+            resetGameState();
+
+            try {
+                const prompt = "Generate a 20-30 word meaningful paragraph in Hindi (Devanagari script only). No English. No quotes.";
+                const aiPromise = puter.ai.chat(prompt, { model: "gemini-3-flash-preview" });
+                const timeout = new Promise((_, rej) => setTimeout(() => rej("Timeout"), 8000));
+                const res = await Promise.race([aiPromise, timeout]);
+                let text = res.message.content.trim().replace(/^['"]|['"]$/g, '');
+                if (!/[\u0900-\u097F]/.test(text)) throw new Error("Invalid");
+                setupText(text);
+            } catch (e) {
+                console.warn("Fallback:", e);
+                setupText(fallbackTexts[Math.floor(Math.random() * fallbackTexts.length)]);
+            } finally {
+                loadingOverlay.classList.remove('active');
+                startCountdown();
+            }
+        }
+
+        function resetGameState() {
+            typeInput.disabled = true;
+            typeInput.value = '';
+            timerEl.textContent = "00:00";
+            wpmDisplayEl.innerHTML = "0 <small>WPM</small>";
+            liveAccuracyEl.textContent = "100%";
+            livePositionEl.textContent = "1st";
+            userCar.style.left = '0%';
+            bots.forEach(b => { b.progress = 0; document.getElementById(b.id).style.left = '0%'; clearInterval(b.interval); });
+            clearInterval(timerInterval);
+            isRacing = false; startTime = null; totalKeystrokes = 0; errorCount = 0; userProgress = 0;
+            currentWordIndex = 0; correctWords = 0; words = [];
+        }
+
+        function setupText(text) {
+            const cleanText = text.replace(/\s+/g, ' ').trim();
+            words = cleanText.split(' ');
+
+            textDisplay.innerHTML = '';
+            words.forEach((word, wordIdx) => {
+                const wordSpan = document.createElement('span');
+                wordSpan.className = 'word';
+                wordSpan.dataset.index = wordIdx;
+
+                // Add each character
+                word.split('').forEach(char => {
+                    const charSpan = document.createElement('span');
+                    charSpan.innerText = char;
+                    charSpan.className = 'char';
+                    wordSpan.appendChild(charSpan);
+                });
+
+                textDisplay.appendChild(wordSpan);
+
+                // Add space between words (except last)
+                if (wordIdx < words.length - 1) {
+                    const spaceSpan = document.createElement('span');
+                    spaceSpan.innerText = ' ';
+                    spaceSpan.className = 'char space';
+                    textDisplay.appendChild(spaceSpan);
+                }
+            });
+
+            // Highlight first word as current
+            highlightCurrentWord();
+        }
+
+        function highlightCurrentWord() {
+            const wordSpans = textDisplay.querySelectorAll('.word');
+            wordSpans.forEach((ws, i) => {
+                ws.classList.remove('current-word', 'completed-word');
+                if (i < currentWordIndex) ws.classList.add('completed-word');
+                else if (i === currentWordIndex) ws.classList.add('current-word');
+            });
+
+            // Also mark spaces as completed
+            const allChars = textDisplay.querySelectorAll('.char');
+            let charCount = 0;
+            for (let i = 0; i < currentWordIndex && i < words.length; i++) {
+                charCount += words[i].length + 1; // word + space
+            }
+            allChars.forEach((c, idx) => {
+                if (idx < charCount - 1) c.classList.add('correct'); // -1 to not include current space
+            });
+        }
+
+        function startCountdown() {
+            countdownOverlay.classList.add('active');
+            let count = 3;
+            countdownNumber.textContent = count;
+            playSound('countdown');
+
+            const countInterval = setInterval(() => {
+                count--;
+                if (count > 0) {
+                    countdownNumber.textContent = count;
+                    countdownNumber.style.animation = 'none';
+                    void countdownNumber.offsetWidth;
+                    countdownNumber.style.animation = 'countPulse 1s ease-out';
+                    playSound('countdown');
+                } else if (count === 0) {
+                    countdownNumber.textContent = "GO!";
+                    countdownNumber.style.color = 'var(--accent)';
+                    playSound('go');
+                } else {
+                    clearInterval(countInterval);
+                    countdownOverlay.classList.remove('active');
+                    countdownNumber.style.color = 'var(--primary)';
+                    typeInput.disabled = false;
+                    typeInput.focus();
+                    textDisplay.classList.add('active');
+                }
+            }, 1000);
+        }
+
+        function startRace() {
+            isRacing = true;
+            startTime = new Date();
+
+            bots.forEach(bot => {
+                const speed = bot.base + (Math.random() * 15 - 7);
+                const wordsCount = words.length;
+                const duration = (wordsCount / speed) * 60; // seconds
+                const tick = 100;
+                const inc = 100 / ((duration * 1000) / tick);
+                bot.interval = setInterval(() => {
+                    bot.progress += inc;
+                    if (bot.progress >= 100) { bot.progress = 100; clearInterval(bot.interval); }
+                    document.getElementById(bot.id).style.left = `${bot.progress}%`;
+                }, tick);
+            });
+
+            timerInterval = setInterval(updateLiveStats, 250);
+        }
+
+        function updateLiveStats() {
+            const now = new Date();
+            const sec = Math.floor((now - startTime) / 1000);
+            timerEl.textContent = `${String(Math.floor(sec / 60)).padStart(2, '0')}:${String(sec % 60).padStart(2, '0')}`;
+
+            const wpm = calcWPM();
+            wpmDisplayEl.innerHTML = `${wpm} <small>WPM</small>`;
+
+            const acc = totalKeystrokes > 0 ? Math.max(0, Math.round(((totalKeystrokes - errorCount) / totalKeystrokes) * 100)) : 100;
+            liveAccuracyEl.textContent = `${acc}%`;
+
+            livePositionEl.textContent = getPosition();
+        }
+
+        function getPosition() {
+            let rank = 1;
+            bots.forEach(b => { if (b.progress > userProgress) rank++; });
+            return ['1st', '2nd', '3rd', '4th'][rank - 1];
+        }
+
+        function handleInput(e) {
+            if (!isRacing && typeInput.value.length > 0) startRace();
+            if (!isRacing) return;
+
+            const input = typeInput.value;
+            const currentWord = words[currentWordIndex];
+
+            // Check if user typed space (word submission)
+            if (input.endsWith(' ')) {
+                const typedWord = input.trim();
+                totalKeystrokes += typedWord.length + 1; // +1 for space
+
+                if (typedWord === currentWord) {
+                    // Correct word!
+                    playSound('word');
+                    correctWords++;
+                    markWordComplete(currentWordIndex, true);
+                    currentWordIndex++;
+                    typeInput.value = '';
+
+                    userProgress = (currentWordIndex / words.length) * 100;
+                    userCar.style.left = `${userProgress}%`;
+
+                    highlightCurrentWord();
+
+                    // Check if race complete
+                    if (currentWordIndex >= words.length) {
+                        finishRace();
+                        return;
+                    }
+                } else {
+                    // Wrong word - show error but allow retry
+                    errorCount += Math.abs(typedWord.length - currentWord.length) + countDifferences(typedWord, currentWord);
+                    playSound('error');
+                    shakeInput();
+                    typeInput.value = typedWord; // Remove the space, keep the wrong word
+                }
+                return;
+            }
+
+            // Live character-by-character feedback while typing current word
+            totalKeystrokes++;
+            updateCurrentWordHighlight(input);
+        }
+
+        function countDifferences(a, b) {
+            let diff = 0;
+            const len = Math.max(a.length, b.length);
+            for (let i = 0; i < len; i++) {
+                if (a[i] !== b[i]) diff++;
+            }
+            return diff;
+        }
+
+        function updateCurrentWordHighlight(input) {
+            const wordSpan = textDisplay.querySelector(`.word[data-index="${currentWordIndex}"]`);
+            if (!wordSpan) return;
+
+            const chars = wordSpan.querySelectorAll('.char');
+            const currentWord = words[currentWordIndex];
+
+            chars.forEach((charEl, i) => {
+                charEl.classList.remove('correct', 'incorrect', 'current');
+                const typedChar = input[i];
+
+                if (typedChar == null) {
+                    // Not typed yet
+                    if (i === input.length) charEl.classList.add('current');
+                } else if (typedChar === currentWord[i]) {
+                    charEl.classList.add('correct');
+                } else {
+                    charEl.classList.add('incorrect');
+                }
+            });
+
+            // If typed more than word length, show error
+            if (input.length > currentWord.length) {
+                chars[chars.length - 1].classList.add('incorrect');
+            }
+        }
+
+        function markWordComplete(wordIdx, isCorrect) {
+            const wordSpan = textDisplay.querySelector(`.word[data-index="${wordIdx}"]`);
+            if (!wordSpan) return;
+
+            wordSpan.classList.add('completed-word');
+            const chars = wordSpan.querySelectorAll('.char');
+            chars.forEach(c => {
+                c.classList.remove('current', 'incorrect');
+                c.classList.add('correct');
+            });
+        }
+
+        function shakeInput() {
+            typeInput.classList.add('shake');
+            setTimeout(() => typeInput.classList.remove('shake'), 300);
+        }
+
+        function calcWPM() {
+            if (!startTime) return 0;
+            const min = (new Date() - startTime) / 60000;
+            if (min === 0) return 0;
+            return Math.round(correctWords / min);
+        }
+
+        function finishRace() {
+            isRacing = false;
+            clearInterval(timerInterval);
+            bots.forEach(b => clearInterval(b.interval));
+            textDisplay.classList.remove('active');
+            typeInput.disabled = true;
+
+            playSound('finish');
+
+            const wpm = calcWPM();
+            const sec = Math.floor((new Date() - startTime) / 1000);
+            const acc = totalKeystrokes > 0 ? Math.max(0, Math.round(((totalKeystrokes - errorCount) / totalKeystrokes) * 100)) : 100;
+            const pos = getPosition();
+
+            finalWpmEl.textContent = wpm;
+            finalAccuracyEl.textContent = `${acc}%`;
+            finalTimeEl.textContent = `${sec}s`;
+
+            if (pos === '1st') {
+                trophyIconEl.textContent = '🥇';
+                resultTitleEl.textContent = 'Victory!';
+                positionTextEl.textContent = 'You finished 1st!';
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            } else if (pos === '2nd') {
+                trophyIconEl.textContent = '🥈';
+                resultTitleEl.textContent = 'Great Job!';
+                positionTextEl.textContent = 'You finished 2nd!';
+                confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 } });
+            } else if (pos === '3rd') {
+                trophyIconEl.textContent = '🥉';
+                resultTitleEl.textContent = 'Good Effort!';
+                positionTextEl.textContent = 'You finished 3rd!';
+            } else {
+                trophyIconEl.textContent = '🏁';
+                resultTitleEl.textContent = 'Race Complete';
+                positionTextEl.textContent = 'You finished 4th. Keep practicing!';
+            }
+
+            resultsModal.classList.remove('hidden');
+            modalRestartBtn.focus();
+        }
+
+        // --- Event Listeners ---
+        typeInput.addEventListener('input', handleInput);
+        typeInput.addEventListener('paste', e => e.preventDefault());
+        modalRestartBtn.addEventListener('click', fetchNewRace);
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Enter' && !resultsModal.classList.contains('hidden')) fetchNewRace();
+        });
+
+        // Start
+        window.addEventListener('DOMContentLoaded', fetchNewRace);
+
+    </script>
 </body>
 
 </html>
