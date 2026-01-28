@@ -4,2092 +4,554 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>रफ़्तार Pro | Professional Hindi TypeRacer</title>
+    <title>रफ़्तार Pro | Save & Start</title>
+
     <script src="https://js.puter.com/v2/"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@300;400;600;700;800&family=Space+Mono:wght@400;700&family=Unbounded:wght@300;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.0/dist/confetti.browser.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Noto+Sans+Devanagari:wght@300;400;600;700&family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --bg-dark: #0a0e1a;
-            --bg-surface: rgba(18, 24, 38, 0.92);
-            --bg-elevated: rgba(30, 38, 58, 0.95);
-            --primary: #00d9ff;
-            --primary-dark: #0099ff;
-            --primary-glow: rgba(0, 217, 255, 0.4);
-            --secondary: #ff006e;
-            --accent: #39ff14;
-            --accent-warm: #ffbe0b;
-            --error: #ff3366;
-            --warning: #ffcc00;
-            --text-main: #e8f0ff;
-            --text-sub: #8b9dc3;
-            --text-muted: #5a6a85;
-            --border-subtle: rgba(139, 157, 195, 0.12);
-            --border-medium: rgba(139, 157, 195, 0.24);
-            --track-bg: rgba(30, 41, 59, 0.6);
-            --font-hindi: 'Noto Sans Devanagari', sans-serif;
-            --font-mono: 'Space Mono', monospace;
-            --font-display: 'Unbounded', sans-serif;
+            --bg-dark: #09090b;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --primary: #00f2fe;
+            --primary-dark: #4facfe;
+            --accent: #ff0055;
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --success: #00e676;
+            --error: #ff1744;
+            --font-main: 'Noto Sans Devanagari', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
         }
 
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        html,
-        body {
-            height: 100%;
-            overflow-x: hidden;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
 
         body {
-            background: var(--bg-dark);
-            color: var(--text-main);
-            font-family: var(--font-hindi);
-            position: relative;
-        }
-
-        /* Advanced Animated Background */
-        .bg-canvas {
-            position: fixed;
-            inset: 0;
-            z-index: -1;
-            background: 
-                radial-gradient(ellipse at 15% 20%, rgba(0, 217, 255, 0.15) 0%, transparent 50%),
-                radial-gradient(ellipse at 85% 80%, rgba(255, 0, 110, 0.12) 0%, transparent 50%),
-                linear-gradient(180deg, var(--bg-dark) 0%, #0f1628 50%, #0a0e1a 100%);
-        }
-
-        .bg-canvas::before {
-            content: '';
-            position: absolute;
-            inset: 0;
+            background-color: var(--bg-dark);
             background-image: 
-                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 217, 255, 0.03) 2px, rgba(0, 217, 255, 0.03) 4px),
-                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0, 217, 255, 0.03) 2px, rgba(0, 217, 255, 0.03) 4px);
-            opacity: 0.3;
-        }
-
-        .floating-orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(100px);
-            opacity: 0.4;
-            animation: orbit 25s ease-in-out infinite;
-        }
-
-        .orb-1 {
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(0, 217, 255, 0.3), transparent);
-            top: -10%;
-            left: -10%;
-        }
-
-        .orb-2 {
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(255, 0, 110, 0.25), transparent);
-            bottom: -5%;
-            right: -5%;
-            animation-delay: -12s;
-            animation-duration: 30s;
-        }
-
-        .orb-3 {
-            width: 350px;
-            height: 350px;
-            background: radial-gradient(circle, rgba(57, 255, 20, 0.2), transparent);
-            top: 50%;
-            left: 50%;
-            animation-delay: -18s;
-            animation-duration: 35s;
-        }
-
-        @keyframes orbit {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            25% { transform: translate(30px, -40px) rotate(5deg); }
-            50% { transform: translate(-20px, 30px) rotate(-3deg); }
-            75% { transform: translate(40px, 20px) rotate(4deg); }
-        }
-
-        .app-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            position: relative;
-        }
-
-        /* Header with Settings */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            gap: 1rem;
-        }
-
-        .logo-section {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .logo-icon {
-            font-size: 3rem;
-            animation: pulse-glow 3s ease-in-out infinite;
-            filter: drop-shadow(0 0 20px var(--primary-glow));
-        }
-
-        @keyframes pulse-glow {
-            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 20px var(--primary-glow)); }
-            50% { transform: scale(1.1); filter: drop-shadow(0 0 30px var(--primary-glow)); }
-        }
-
-        header h1 {
-            font-family: var(--font-display);
-            font-size: 3.2rem;
-            font-weight: 800;
-            letter-spacing: -2px;
-            background: linear-gradient(135deg, #fff 0%, var(--primary) 40%, var(--secondary) 100%);
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 40px var(--primary-glow);
-        }
-
-        .tagline {
-            color: var(--text-sub);
-            font-family: var(--font-mono);
-            font-size: 0.8rem;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            padding-left: 0.5rem;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 0.75rem;
-        }
-
-        .icon-btn {
-            width: 48px;
-            height: 48px;
+                radial-gradient(circle at 10% 20%, rgba(0, 242, 254, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(255, 0, 85, 0.08) 0%, transparent 40%);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: var(--bg-elevated);
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 1.25rem;
-            color: var(--text-sub);
-        }
-
-        .icon-btn:hover {
-            background: var(--bg-surface);
-            border-color: var(--primary);
-            color: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 20px var(--primary-glow);
-        }
-
-        .icon-btn.active {
-            background: var(--primary);
-            border-color: var(--primary);
-            color: var(--bg-dark);
-        }
-
-        /* Stats Bar - Enhanced */
-        .stats-bar {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .stat-box {
-            background: var(--bg-surface);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border-subtle);
-            border-radius: 16px;
-            padding: 1rem 1.25rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
             overflow: hidden;
         }
 
-        .stat-box::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, transparent 0%, rgba(0, 217, 255, 0.05) 100%);
-            opacity: 0;
-            transition: opacity 0.3s;
+        .app-wrapper {
+            width: 100%; max-width: 1000px; height: 90vh;
+            display: flex; flex-direction: column; gap: 1.5rem; padding: 1rem;
         }
 
-        .stat-box:hover::before {
-            opacity: 1;
+        /* --- HEADER & CONTROLS --- */
+        header {
+            display: flex; justify-content: space-between; align-items: flex-end;
+            padding: 1rem 1.5rem; background: var(--glass);
+            border: 1px solid var(--glass-border); border-radius: 16px; backdrop-filter: blur(10px);
         }
 
-        .stat-box:hover {
-            transform: translateY(-4px);
-            border-color: var(--border-medium);
-            box-shadow: 0 8px 32px rgba(0, 217, 255, 0.15);
+        .brand h1 {
+            font-family: 'Outfit', sans-serif; font-size: 2rem;
+            background: linear-gradient(to right, var(--primary), #fff);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
         }
 
-        .stat-box.highlight {
-            border-color: var(--primary);
-            background: linear-gradient(135deg, var(--bg-surface) 0%, rgba(0, 217, 255, 0.1) 100%);
-            box-shadow: 0 0 30px var(--primary-glow);
+        .difficulty-control {
+            display: flex; flex-direction: column; align-items: flex-end;
+            gap: 0.5rem; width: 250px;
         }
 
-        .stat-icon {
-            font-size: 2rem;
-            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+        .diff-label {
+            font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono);
+            display: flex; justify-content: space-between; width: 100%;
         }
 
-        .stat-content {
-            flex: 1;
+        input[type=range] {
+            width: 100%; -webkit-appearance: none; background: transparent;
         }
-
-        .stat-label {
-            font-family: var(--font-mono);
-            font-size: 0.65rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin-bottom: 0.25rem;
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; cursor: pointer;
         }
-
-        .stat-value {
-            font-family: var(--font-display);
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--text-main);
-            display: flex;
-            align-items: baseline;
-            gap: 0.25rem;
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%;
+            background: var(--primary); margin-top: -6px; cursor: pointer;
+            box-shadow: 0 0 10px var(--primary); transition: transform 0.2s;
         }
+        input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 
-        .stat-value small {
-            font-size: 0.65rem;
-            font-weight: 400;
-            color: var(--text-sub);
-            font-family: var(--font-mono);
+        /* --- STATS BAR --- */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+        .stat-card {
+            background: var(--glass); border: 1px solid var(--glass-border);
+            padding: 1rem; border-radius: 12px; text-align: center; transition: transform 0.3s;
         }
+        .stat-val { font-family: var(--font-mono); font-size: 1.8rem; font-weight: 700; color: var(--text-main); }
+        .stat-title { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
 
-        /* Race Track - Enhanced */
-        .race-track {
-            background: var(--bg-surface);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 1.25rem 1.75rem;
-            margin-bottom: 1.5rem;
-            border: 1px solid var(--border-subtle);
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
-        }
+        /* --- TRACK --- */
+        .track-container { background: var(--glass); border-radius: 16px; padding: 1.5rem; position: relative; }
+        .lane { position: relative; height: 40px; margin-bottom: 0.5rem; display: flex; align-items: center; }
+        .track-line { position: absolute; left: 40px; right: 40px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; z-index: 1; }
+        .car { position: absolute; left: 0; z-index: 2; font-size: 1.8rem; transition: left 0.4s cubic-bezier(0.25, 1, 0.5, 1); transform: translateX(10px); }
+        .user-car { z-index: 3; filter: drop-shadow(0 0 10px var(--primary)); }
 
-        .track-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 1px solid var(--border-subtle);
-        }
-
-        .track-title {
-            font-family: var(--font-display);
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text-sub);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .lane {
-            display: grid;
-            grid-template-columns: 50px 90px 1fr 40px;
-            align-items: center;
-            gap: 1rem;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid var(--border-subtle);
-            transition: all 0.3s;
-        }
-
-        .lane:last-child {
-            border-bottom: none;
-        }
-
-        .lane:hover {
-            background: rgba(0, 217, 255, 0.05);
-            margin: -0.25rem -0.75rem;
-            padding: 1rem 0.75rem;
-            border-radius: 12px;
-        }
-
-        .racer-avatar {
-            font-size: 2rem;
-            text-align: center;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-        }
-
-        .racer-info {
-            display: flex;
-            flex-direction: column;
-            gap: 0.15rem;
-        }
-
-        .racer-name {
-            font-size: 0.9rem;
-            color: var(--text-main);
-            font-weight: 600;
-        }
-
-        .racer-speed {
-            font-family: var(--font-mono);
-            font-size: 0.7rem;
-            color: var(--text-muted);
-        }
-
-        .track-line {
-            height: 10px;
-            background: var(--track-bg);
-            border-radius: 5px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .track-line::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: repeating-linear-gradient(
-                90deg,
-                transparent 0,
-                transparent 25px,
-                rgba(255, 255, 255, 0.05) 25px,
-                rgba(255, 255, 255, 0.05) 50px
-            );
-        }
-
-        .car {
-            position: absolute;
-            top: 50%;
-            left: 0%;
-            transform: translate(-50%, -50%);
-            font-size: 1.4rem;
-            transition: left 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.6));
-            z-index: 1;
-        }
-
-        .user-car {
-            font-size: 1.8rem;
-            filter: drop-shadow(0 0 15px var(--primary)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.6));
-            z-index: 2;
-        }
-
-        .user-lane {
-            background: linear-gradient(90deg, rgba(0, 217, 255, 0.15) 0%, transparent 60%);
-            border-left: 3px solid var(--primary);
-            padding-left: calc(0.75rem - 3px);
-        }
-
-        .finish-flag {
-            font-size: 1.2rem;
-            text-align: center;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-        }
-
-        /* Typing Container - Enhanced */
-        .typing-container {
-            background: var(--bg-surface);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 2rem;
-            flex-grow: 1;
-            border: 1px solid var(--border-subtle);
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
-        }
-
-        .text-display {
-            font-family: var(--font-hindi);
-            font-size: 1.75rem;
-            line-height: 2.2;
-            padding: 1.5rem;
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 16px;
-            min-height: 140px;
-            flex-grow: 1;
-            user-select: none;
-            border: 2px solid transparent;
-            transition: all 0.3s;
-            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .text-display.active {
-            border-color: var(--primary);
-            box-shadow: 0 0 30px var(--primary-glow), inset 0 2px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .char {
-            color: var(--text-muted);
-            position: relative;
-            transition: all 0.15s;
-        }
-
-        .char.correct {
-            color: var(--accent);
-            text-shadow: 0 0 8px rgba(57, 255, 20, 0.4);
-        }
-
-        .char.incorrect {
-            color: var(--error);
-            background: rgba(255, 51, 102, 0.3);
-            border-radius: 3px;
-            box-shadow: 0 0 10px rgba(255, 51, 102, 0.4);
-        }
-
-        .char.current {
-            color: var(--text-main);
-            border-bottom: 3px solid var(--primary);
-            animation: cursor-blink 1s ease-in-out infinite;
-        }
-
-        @keyframes cursor-blink {
-            0%, 100% { border-bottom-color: var(--primary); }
-            50% { border-bottom-color: transparent; }
-        }
-
-        .word {
-            display: inline;
-            padding: 6px 3px;
-            border-radius: 6px;
-            transition: all 0.3s;
-            margin: 0 2px;
-        }
-
-        .word.current-word {
-            background: rgba(0, 217, 255, 0.25);
-            box-shadow: 0 0 0 2px rgba(0, 217, 255, 0.5);
-        }
-
-        .word.completed-word {
-            opacity: 0.4;
-        }
-
-        .input-area {
-            margin-top: 1.25rem;
-        }
-
-        .main-input {
-            width: 100%;
-            padding: 1.25rem 1.5rem;
-            border-radius: 16px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 2px solid var(--border-subtle);
-            color: var(--text-main);
-            font-family: var(--font-hindi);
-            font-size: 1.3rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            caret-color: var(--primary);
-            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .main-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: rgba(0, 0, 0, 0.4);
-            box-shadow: 0 0 30px var(--primary-glow), inset 0 2px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .main-input:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-8px); }
-            40%, 80% { transform: translateX(8px); }
-        }
-
-        .main-input.shake {
-            animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97);
-            border-color: var(--error) !important;
-            box-shadow: 0 0 20px rgba(255, 51, 102, 0.5) !important;
-        }
-
-        .keyboard-hint {
-            text-align: center;
-            margin-top: 1rem;
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            font-family: var(--font-mono);
-        }
-
-        .keyboard-hint kbd {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 0.25rem 0.6rem;
-            border-radius: 6px;
-            border: 1px solid var(--border-subtle);
-            font-family: var(--font-mono);
-            font-size: 0.75rem;
+        /* --- TYPING AREA --- */
+        .typing-wrapper {
+            flex-grow: 1; background: var(--glass); border: 1px solid var(--glass-border);
+            border-radius: 20px; padding: 2rem; display: flex; flex-direction: column;
+            position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.3); overflow: hidden;
         }
 
         /* Overlays */
-        .loading-overlay,
-        .countdown-overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(10, 14, 26, 0.98);
-            backdrop-filter: blur(10px);
-            z-index: 50;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            border-radius: 20px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
+        .overlay {
+            position: absolute; inset: 0; background: rgba(9, 9, 11, 0.95);
+            backdrop-filter: blur(8px); z-index: 50; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; transition: opacity 0.3s;
         }
+        .overlay.hidden { opacity: 0; pointer-events: none; }
 
-        .loading-overlay.active,
-        .countdown-overlay.active {
-            opacity: 1;
-            pointer-events: all;
+        .loader-ring {
+            width: 48px; height: 48px; border: 4px solid var(--primary);
+            border-bottom-color: transparent; border-radius: 50%; animation: rotation 1s linear infinite;
         }
+        @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        .spinner {
-            width: 60px;
-            height: 60px;
-            border: 4px solid rgba(0, 217, 255, 0.2);
-            border-radius: 50%;
-            border-top-color: var(--primary);
-            animation: spin 1s linear infinite;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 0 30px var(--primary-glow);
-        }
+        .countdown-text { font-family: 'Outfit', sans-serif; font-size: 6rem; font-weight: 900; color: var(--primary); }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .loading-text {
-            font-family: var(--font-mono);
-            font-size: 0.9rem;
-            color: var(--text-sub);
-            margin-bottom: 0.5rem;
-        }
-
-        .provider-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.4rem 0.8rem;
-            background: rgba(0, 217, 255, 0.15);
-            border: 1px solid var(--primary);
-            border-radius: 8px;
-            font-family: var(--font-mono);
-            font-size: 0.75rem;
-            color: var(--primary);
-        }
-
-        .countdown-number {
-            font-family: var(--font-display);
-            font-size: 10rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 80px var(--primary-glow);
-            animation: countPulse 1s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        @keyframes countPulse {
-            0% { transform: scale(1.8) rotate(-10deg); opacity: 0; }
-            100% { transform: scale(1) rotate(0deg); opacity: 1; }
-        }
-
-        /* Settings Panel */
-        .settings-panel {
-            position: fixed;
-            top: 0;
-            right: -450px;
-            width: 450px;
-            height: 100vh;
-            background: var(--bg-elevated);
-            backdrop-filter: blur(30px);
-            border-left: 1px solid var(--border-medium);
-            box-shadow: -10px 0 50px rgba(0, 0, 0, 0.5);
-            z-index: 100;
-            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow-y: auto;
-        }
-
-        .settings-panel.active {
-            right: 0;
-        }
-
-        .settings-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--border-subtle);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            background: var(--bg-elevated);
-            backdrop-filter: blur(30px);
-            z-index: 10;
-        }
-
-        .settings-header h2 {
-            font-family: var(--font-display);
-            font-size: 1.4rem;
-            font-weight: 700;
-        }
-
-        .close-btn {
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: none;
-            border: 1px solid var(--border-subtle);
-            border-radius: 8px;
-            cursor: pointer;
-            color: var(--text-sub);
-            transition: all 0.2s;
-        }
-
-        .close-btn:hover {
-            background: var(--bg-surface);
-            border-color: var(--error);
-            color: var(--error);
-        }
-
-        .settings-content {
-            padding: 1.5rem;
-        }
-
-        .setting-section {
-            margin-bottom: 2rem;
-        }
-
-        .setting-section:last-child {
-            margin-bottom: 0;
-        }
-
-        .section-title {
-            font-family: var(--font-display);
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text-main);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .section-title-icon {
-            font-size: 1.2rem;
-        }
-
-        .provider-grid {
-            display: grid;
-            gap: 0.75rem;
-        }
-
-        .provider-card {
-            background: var(--bg-surface);
-            border: 2px solid var(--border-subtle);
-            border-radius: 12px;
-            padding: 1rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .provider-card:hover {
-            border-color: var(--border-medium);
-            transform: translateY(-2px);
-        }
-
-        .provider-card.selected {
-            border-color: var(--primary);
-            background: linear-gradient(135deg, rgba(0, 217, 255, 0.1) 0%, var(--bg-surface) 100%);
-            box-shadow: 0 4px 20px var(--primary-glow);
-        }
-
-        .provider-icon {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            background: var(--bg-elevated);
-            border-radius: 10px;
-            border: 1px solid var(--border-subtle);
-        }
-
-        .provider-card.selected .provider-icon {
-            background: var(--primary);
-            border-color: var(--primary);
-            box-shadow: 0 0 15px var(--primary-glow);
-        }
-
-        .provider-details {
-            flex: 1;
-        }
-
-        .provider-name {
-            font-weight: 600;
-            font-size: 0.95rem;
-            color: var(--text-main);
-            margin-bottom: 0.2rem;
-        }
-
-        .provider-desc {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            font-family: var(--font-mono);
-        }
-
-        .input-group {
-            margin-bottom: 1rem;
-        }
-
-        .input-label {
-            display: block;
-            font-size: 0.8rem;
-            color: var(--text-sub);
-            margin-bottom: 0.5rem;
-            font-family: var(--font-mono);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .input-field {
-            width: 100%;
-            padding: 0.8rem 1rem;
-            background: var(--bg-surface);
-            border: 1px solid var(--border-subtle);
-            border-radius: 10px;
-            color: var(--text-main);
-            font-family: var(--font-mono);
-            font-size: 0.85rem;
-            transition: all 0.3s;
-        }
-
-        .input-field:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 20px var(--primary-glow);
-        }
-
-        .input-field::placeholder {
-            color: var(--text-muted);
-        }
-
-        .save-btn {
-            width: 100%;
-            padding: 1rem;
+        /* Start Screen Button */
+        .btn-start-large {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            border: none;
-            border-radius: 12px;
-            color: white;
-            font-weight: 700;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            font-family: var(--font-display);
+            color: #000; font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.5rem;
+            padding: 1.5rem 4rem; border: none; border-radius: 100px; cursor: pointer;
+            box-shadow: 0 0 40px var(--primary-glow);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase; letter-spacing: 2px;
+        }
+        .btn-start-large:hover { transform: scale(1.05); box-shadow: 0 0 60px var(--primary); }
+
+        /* Text Display */
+        .text-area {
+            flex-grow: 1; font-size: 1.6rem; line-height: 2.4; color: #52525b;
+            overflow: hidden; position: relative; margin-bottom: 1.5rem;
+            mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
         }
 
-        .save-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px var(--primary-glow);
+        .word { display: inline-block; margin-right: 12px; padding: 4px 6px; border-radius: 6px; transition: all 0.2s; }
+        .word.active { background: rgba(0, 242, 254, 0.1); box-shadow: 0 0 0 1px rgba(0, 242, 254, 0.3); color: var(--text-main); }
+        .word.error-shake { animation: shake 0.4s ease-in-out; background: rgba(255, 23, 68, 0.2); }
+        
+        .char { position: relative; }
+        .char.correct { color: var(--text-main); }
+        .char.incorrect { color: var(--error); text-decoration: underline wavy var(--error); }
+        
+        /* Input */
+        .input-box input {
+            width: 100%; background: rgba(0,0,0,0.3); border: 2px solid var(--glass-border);
+            border-radius: 12px; padding: 1.2rem; font-size: 1.3rem; font-family: var(--font-main);
+            color: var(--text-main); transition: all 0.3s;
         }
+        .input-box input:focus { border-color: var(--primary); box-shadow: 0 0 30px rgba(0, 242, 254, 0.15); }
 
-        .save-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+
+        /* Result Modal */
+        .modal-bg {
+            position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: 0.3s;
         }
-
-        .info-box {
-            background: rgba(0, 217, 255, 0.1);
-            border: 1px solid rgba(0, 217, 255, 0.3);
-            border-radius: 10px;
-            padding: 1rem;
-            font-size: 0.8rem;
-            color: var(--text-sub);
-            line-height: 1.6;
+        .modal-bg.show { opacity: 1; pointer-events: all; }
+        
+        .result-panel {
+            background: #18181b; border: 1px solid var(--glass-border); padding: 3rem;
+            border-radius: 24px; text-align: center; box-shadow: 0 0 50px rgba(0, 242, 254, 0.2);
+            transform: scale(0.9); transition: transform 0.3s;
         }
+        .modal-bg.show .result-panel { transform: scale(1); }
 
-        .info-box a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 600;
+        .btn-restart {
+            background: var(--primary); color: #000; font-weight: 700; padding: 1rem 3rem;
+            border-radius: 50px; border: none; font-size: 1.1rem; cursor: pointer;
+            margin-top: 2rem; transition: 0.2s;
         }
-
-        .info-box a:hover {
-            text-decoration: underline;
-        }
-
-        /* Modal - Enhanced */
-        .modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(10, 14, 26, 0.95);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 200;
-            backdrop-filter: blur(12px);
-            opacity: 1;
-            transition: opacity 0.4s;
-        }
-
-        .modal.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .modal-content {
-            background: linear-gradient(145deg, var(--bg-elevated) 0%, var(--bg-surface) 100%);
-            border: 2px solid var(--border-medium);
-            padding: 3rem;
-            border-radius: 24px;
-            text-align: center;
-            box-shadow: 0 0 80px var(--primary-glow);
-            transform: scale(1) translateY(0);
-            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-            max-width: 480px;
-            width: 90%;
-        }
-
-        .modal.hidden .modal-content {
-            transform: scale(0.8) translateY(40px);
-        }
-
-        .trophy-icon {
-            font-size: 5rem;
-            margin-bottom: 1rem;
-            animation: trophy-bounce 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-            filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.4));
-        }
-
-        @keyframes trophy-bounce {
-            0% { transform: translateY(-40px) rotate(-20deg); opacity: 0; }
-            50% { transform: translateY(15px) rotate(5deg); }
-            100% { transform: translateY(0) rotate(0deg); opacity: 1; }
-        }
-
-        .modal-content h2 {
-            font-family: var(--font-display);
-            font-size: 2.2rem;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .position-text {
-            color: var(--text-sub);
-            margin-bottom: 2rem;
-            font-size: 1rem;
-        }
-
-        .results-stats {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin-bottom: 2.5rem;
-        }
-
-        .result-stat {
-            text-align: center;
-        }
-
-        .result-icon {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
-        }
-
-        .result-value {
-            font-family: var(--font-display);
-            font-size: 2.5rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .result-label {
-            font-family: var(--font-mono);
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-top: 0.25rem;
-        }
-
-        .primary-btn {
-            width: 100%;
-            padding: 1.25rem;
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: white;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            border: none;
-            border-radius: 14px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-family: var(--font-display);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.75rem;
-        }
-
-        .primary-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 40px var(--primary-glow);
-        }
-
-        .shortcut-hint {
-            margin-top: 1.25rem;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            font-family: var(--font-mono);
-        }
-
-        .shortcut-hint kbd {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 0.3rem 0.6rem;
-            border-radius: 6px;
-            border: 1px solid var(--border-subtle);
-        }
-
-        footer {
-            text-align: center;
-            padding: 1.5rem 0;
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            margin-top: auto;
-            font-family: var(--font-mono);
-        }
-
-        footer a {
-            color: var(--primary);
-            text-decoration: none;
-        }
-
-        footer a:hover {
-            text-decoration: underline;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .app-container {
-                padding: 1rem;
-            }
-
-            header {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            header h1 {
-                font-size: 2.5rem;
-            }
-
-            .stats-bar {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .lane {
-                grid-template-columns: 40px 70px 1fr 30px;
-                gap: 0.5rem;
-            }
-
-            .settings-panel {
-                width: 100%;
-                right: -100%;
-            }
-
-            .modal-content {
-                padding: 2rem;
-            }
-
-            .results-stats {
-                gap: 1rem;
-            }
-        }
-
-        /* Toast Notification */
-        .toast {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background: var(--bg-elevated);
-            border: 1px solid var(--border-medium);
-            border-radius: 12px;
-            padding: 1rem 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-            transform: translateX(400px);
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 150;
-        }
-
-        .toast.show {
-            transform: translateX(0);
-        }
-
-        .toast.success {
-            border-color: var(--accent);
-        }
-
-        .toast.error {
-            border-color: var(--error);
-        }
-
-        .toast-icon {
-            font-size: 1.5rem;
-        }
-
-        .toast-message {
-            color: var(--text-main);
-            font-size: 0.9rem;
-        }
+        .btn-restart:hover { box-shadow: 0 0 20px var(--primary); transform: translateY(-2px); }
     </style>
 </head>
 
 <body>
-    <!-- Background -->
-    <div class="bg-canvas">
-        <div class="floating-orb orb-1"></div>
-        <div class="floating-orb orb-2"></div>
-        <div class="floating-orb orb-3"></div>
-    </div>
 
-    <div class="app-container">
+    <div class="app-wrapper">
         <header>
-            <div class="logo-section">
-                <div class="logo">
-                    <span class="logo-icon">⚡</span>
-                    <h1>रफ़्तार</h1>
-                </div>
-                <p class="tagline">AI-Powered Hindi TypeRacer Pro</p>
+            <div class="brand">
+                <h1>रफ़्तार PRO</h1>
+                <div style="font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono);">AI POWERED TYPE RACER</div>
             </div>
-            <div class="header-actions">
-                <button class="icon-btn" id="settingsBtn" title="Settings">⚙️</button>
-                <button class="icon-btn" id="infoBtn" title="Info">ℹ️</button>
+            
+            <div class="difficulty-control">
+                <div class="diff-label">
+                    <span>Difficulty</span>
+                    <span id="diffValue" style="color: var(--primary); font-weight: bold;">Level 5</span>
+                </div>
+                <input type="range" min="1" max="10" value="5" id="diffSlider">
             </div>
         </header>
 
-        <main>
-            <!-- Stats Bar -->
-            <div class="stats-bar">
-                <div class="stat-box">
-                    <span class="stat-icon">⏱️</span>
-                    <div class="stat-content">
-                        <div class="stat-label">Time</div>
-                        <div class="stat-value" id="timer">00:00</div>
-                    </div>
-                </div>
-                <div class="stat-box highlight">
-                    <span class="stat-icon">🚀</span>
-                    <div class="stat-content">
-                        <div class="stat-label">Speed</div>
-                        <div class="stat-value" id="wpmDisplay">0 <small>WPM</small></div>
-                    </div>
-                </div>
-                <div class="stat-box">
-                    <span class="stat-icon">🎯</span>
-                    <div class="stat-content">
-                        <div class="stat-label">Accuracy</div>
-                        <div class="stat-value" id="liveAccuracy">100%</div>
-                    </div>
-                </div>
-                <div class="stat-box">
-                    <span class="stat-icon">🏆</span>
-                    <div class="stat-content">
-                        <div class="stat-label">Position</div>
-                        <div class="stat-value" id="livePosition">1st</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Race Track -->
-            <div class="race-track">
-                <div class="track-header">
-                    <div class="track-title">🏁 Race Track</div>
-                </div>
-                <div class="lane user-lane">
-                    <div class="racer-avatar">👤</div>
-                    <div class="racer-info">
-                        <div class="racer-name">You</div>
-                        <div class="racer-speed">— WPM</div>
-                    </div>
-                    <div class="track-line">
-                        <div class="car user-car" id="userCar">🏎️</div>
-                    </div>
-                    <div class="finish-flag">🏁</div>
-                </div>
-                <div class="lane">
-                    <div class="racer-avatar">🤖</div>
-                    <div class="racer-info">
-                        <div class="racer-name">Aarav</div>
-                        <div class="racer-speed">35 WPM</div>
-                    </div>
-                    <div class="track-line">
-                        <div class="car bot-car" id="bot1Car">🚙</div>
-                    </div>
-                    <div class="finish-flag">🏁</div>
-                </div>
-                <div class="lane">
-                    <div class="racer-avatar">🤖</div>
-                    <div class="racer-info">
-                        <div class="racer-name">Vaani</div>
-                        <div class="racer-speed">50 WPM</div>
-                    </div>
-                    <div class="track-line">
-                        <div class="car bot-car" id="bot2Car">🚗</div>
-                    </div>
-                    <div class="finish-flag">🏁</div>
-                </div>
-                <div class="lane">
-                    <div class="racer-avatar">🤖</div>
-                    <div class="racer-info">
-                        <div class="racer-name">Vihaan</div>
-                        <div class="racer-speed">65 WPM</div>
-                    </div>
-                    <div class="track-line">
-                        <div class="car bot-car" id="bot3Car">🚕</div>
-                    </div>
-                    <div class="finish-flag">🏁</div>
-                </div>
-            </div>
-
-            <!-- Typing Area -->
-            <div class="typing-container">
-                <!-- Countdown Overlay -->
-                <div class="countdown-overlay" id="countdownOverlay">
-                    <div class="countdown-number" id="countdownNumber">3</div>
-                    <p style="font-family: var(--font-display); font-size: 1.2rem; margin-top: 1rem;">Get Ready!</p>
-                </div>
-
-                <!-- Loading Overlay -->
-                <div class="loading-overlay" id="loadingOverlay">
-                    <div class="spinner"></div>
-                    <p class="loading-text">Generating Hindi Text with AI...</p>
-                    <div class="provider-badge">
-                        <span id="currentProviderIcon">🤖</span>
-                        <span id="currentProviderName">Puter AI</span>
-                    </div>
-                </div>
-
-                <div class="text-display" id="textDisplay"></div>
-
-                <div class="input-area">
-                    <input type="text" id="typeInput" class="main-input" placeholder="Race starts when you type..."
-                        autocomplete="off" spellcheck="false" disabled>
-                </div>
-
-                <div class="keyboard-hint">
-                    <kbd>Inscript</kbd> / <kbd>Mangal</kbd> / <kbd>Google Input Tools</kbd> Keyboard Layout
-                </div>
-            </div>
-        </main>
-
-        <footer>
-            Built with ❤️ for Hindi Typers | Multi-LLM Powered
-        </footer>
-    </div>
-
-    <!-- Settings Panel -->
-    <div class="settings-panel" id="settingsPanel">
-        <div class="settings-header">
-            <h2>⚙️ Settings</h2>
-            <button class="close-btn" id="closeSettingsBtn">✕</button>
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-val" id="wpm">0</div><div class="stat-title">WPM</div></div>
+            <div class="stat-card"><div class="stat-val" id="accuracy">100%</div><div class="stat-title">Accuracy</div></div>
+            <div class="stat-card"><div class="stat-val" id="timer">00:00</div><div class="stat-title">Time</div></div>
+            <div class="stat-card" style="border-color: var(--accent);"><div class="stat-val" id="rank" style="color: var(--accent);">-</div><div class="stat-title">Rank</div></div>
         </div>
-        <div class="settings-content">
-            <!-- AI Provider Selection -->
-            <div class="setting-section">
-                <div class="section-title">
-                    <span class="section-title-icon">🤖</span>
-                    AI Provider
-                </div>
-                <div class="provider-grid">
-                    <div class="provider-card selected" data-provider="puter">
-                        <div class="provider-icon">🟢</div>
-                        <div class="provider-details">
-                            <div class="provider-name">Puter AI (Default)</div>
-                            <div class="provider-desc">Free • No API Key Required</div>
-                        </div>
-                    </div>
-                    <div class="provider-card" data-provider="openai">
-                        <div class="provider-icon">🟠</div>
-                        <div class="provider-details">
-                            <div class="provider-name">OpenAI</div>
-                            <div class="provider-desc">GPT-4 • Requires API Key</div>
-                        </div>
-                    </div>
-                    <div class="provider-card" data-provider="gemini">
-                        <div class="provider-icon">🔵</div>
-                        <div class="provider-details">
-                            <div class="provider-name">Google Gemini</div>
-                            <div class="provider-desc">Gemini Pro • Requires API Key</div>
-                        </div>
-                    </div>
-                    <div class="provider-card" data-provider="anthropic">
-                        <div class="provider-icon">🟣</div>
-                        <div class="provider-details">
-                            <div class="provider-name">Anthropic</div>
-                            <div class="provider-desc">Claude • Requires API Key</div>
-                        </div>
-                    </div>
-                    <div class="provider-card" data-provider="openrouter">
-                        <div class="provider-icon">🌐</div>
-                        <div class="provider-details">
-                            <div class="provider-name">OpenRouter</div>
-                            <div class="provider-desc">Multiple Models • Requires API Key</div>
-                        </div>
-                    </div>
+
+        <div class="track-container">
+            <div class="lane">
+                <div class="track-line" style="background: rgba(0, 242, 254, 0.2);"></div>
+                <div class="car user-car" id="userCar">🏎️</div>
+            </div>
+            <div class="lane">
+                <div class="track-line"></div>
+                <div class="car" id="bot1" style="filter: grayscale(1) brightness(0.7);">🚙</div>
+            </div>
+        </div>
+
+        <div class="typing-wrapper">
+            <div class="overlay" id="loader">
+                <div class="loader-ring"></div>
+                <p style="margin-top: 1rem; font-family: var(--font-mono); color: var(--primary);">GENERATING TEXT...</p>
+                <p id="aiPromptDetails" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;"></p>
+            </div>
+            
+            <div class="overlay hidden" id="startScreen">
+                <div style="text-align: center;">
+                    <h2 style="margin-bottom: 2rem; font-family: 'Outfit'; font-size: 2rem;">Ready to Race?</h2>
+                    <button class="btn-start-large" id="startBtn">START RACE ▶</button>
+                    <p style="margin-top: 1.5rem; color: var(--text-muted); font-size: 0.9rem;">Text Loaded & Ready</p>
                 </div>
             </div>
 
-            <!-- API Key Input -->
-            <div class="setting-section" id="apiKeySection" style="display: none;">
-                <div class="section-title">
-                    <span class="section-title-icon">🔑</span>
-                    API Configuration
-                </div>
-                <div class="input-group">
-                    <label class="input-label" for="apiKeyInput">API Key</label>
-                    <input type="password" id="apiKeyInput" class="input-field" placeholder="Enter your API key...">
-                </div>
-                <div class="input-group" id="modelInputGroup" style="display: none;">
-                    <label class="input-label" for="modelInput">Model Name (Optional)</label>
-                    <input type="text" id="modelInput" class="input-field" placeholder="e.g., gpt-4, claude-3-opus">
-                </div>
-                <div class="info-box">
-                    <strong>Get your API key:</strong><br>
-                    <span id="apiKeyInfo"></span>
-                </div>
+            <div class="overlay hidden" id="countdown">
+                <div class="countdown-text" id="cntNum">3</div>
             </div>
 
-            <!-- Game Settings -->
-            <div class="setting-section">
-                <div class="section-title">
-                    <span class="section-title-icon">🎮</span>
-                    Game Settings
-                </div>
-                <div class="input-group">
-                    <label class="input-label" for="wordCountInput">Word Count</label>
-                    <input type="number" id="wordCountInput" class="input-field" value="25" min="15" max="50">
-                </div>
-                <div class="input-group">
-                    <label class="input-label" for="difficultyInput">Text Difficulty</label>
-                    <select id="difficultyInput" class="input-field">
-                        <option value="easy">आसान (Easy)</option>
-                        <option value="medium" selected>मध्यम (Medium)</option>
-                        <option value="hard">कठिन (Hard)</option>
-                    </select>
-                </div>
-            </div>
+            <div class="text-area" id="display"></div>
 
-            <button class="save-btn" id="saveSettingsBtn">
-                <span>💾</span> Save Settings
-            </button>
+            <div class="input-box">
+                <input type="text" id="input" placeholder="Start race to type..." autocomplete="off" disabled>
+            </div>
         </div>
     </div>
 
-    <!-- Results Modal -->
-    <div id="resultsModal" class="modal hidden">
-        <div class="modal-content">
-            <div class="trophy-icon" id="trophyIcon">🏆</div>
-            <h2 id="resultTitle">Race Complete!</h2>
-            <p id="positionText" class="position-text"></p>
-
-            <div class="results-stats">
-                <div class="result-stat">
-                    <div class="result-icon">🚀</div>
-                    <div class="result-value" id="finalWpm">0</div>
-                    <div class="result-label">WPM</div>
-                </div>
-                <div class="result-stat">
-                    <div class="result-icon">🎯</div>
-                    <div class="result-value" id="finalAccuracy">100%</div>
-                    <div class="result-label">Accuracy</div>
-                </div>
-                <div class="result-stat">
-                    <div class="result-icon">⏱️</div>
-                    <div class="result-value" id="finalTime">0s</div>
-                    <div class="result-label">Time</div>
-                </div>
+    <div class="modal-bg" id="resultModal">
+        <div class="result-panel">
+            <div style="font-size: 4rem;">🏆</div>
+            <h2 style="font-family: 'Outfit'; font-size: 2.5rem; margin: 1rem 0;">Race Finished</h2>
+            <div style="display: flex; gap: 2rem; justify-content: center; margin-bottom: 1rem;">
+                <div><div style="color:var(--text-muted); font-size:0.8rem;">SPEED</div><div style="font-size:2rem; font-weight:bold; color:var(--primary);" id="finalWpm">0</div></div>
+                <div><div style="color:var(--text-muted); font-size:0.8rem;">ACCURACY</div><div style="font-size:2rem; font-weight:bold; color:var(--success);" id="finalAcc">100%</div></div>
             </div>
-
-            <button id="modalRestartBtn" class="primary-btn">
-                <span>🔄</span> Race Again
-            </button>
-            <p class="shortcut-hint">Press <kbd>Enter</kbd> to restart</p>
+            <button class="btn-restart" onclick="Game.init()">Next Race</button>
         </div>
-    </div>
-
-    <!-- Toast Notification -->
-    <div class="toast" id="toast">
-        <span class="toast-icon" id="toastIcon">✓</span>
-        <span class="toast-message" id="toastMessage"></span>
     </div>
 
     <script>
-        // DOM Elements
-        const textDisplay = document.getElementById('textDisplay');
-        const typeInput = document.getElementById('typeInput');
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        const countdownOverlay = document.getElementById('countdownOverlay');
-        const countdownNumber = document.getElementById('countdownNumber');
-        const userCar = document.getElementById('userCar');
-        const timerEl = document.getElementById('timer');
-        const wpmDisplayEl = document.getElementById('wpmDisplay');
-        const liveAccuracyEl = document.getElementById('liveAccuracy');
-        const livePositionEl = document.getElementById('livePosition');
-        const resultsModal = document.getElementById('resultsModal');
-        const modalRestartBtn = document.getElementById('modalRestartBtn');
-        const finalWpmEl = document.getElementById('finalWpm');
-        const finalAccuracyEl = document.getElementById('finalAccuracy');
-        const finalTimeEl = document.getElementById('finalTime');
-        const positionTextEl = document.getElementById('positionText');
-        const trophyIconEl = document.getElementById('trophyIcon');
-        const resultTitleEl = document.getElementById('resultTitle');
-
-        // Settings Elements
-        const settingsBtn = document.getElementById('settingsBtn');
-        const infoBtn = document.getElementById('infoBtn');
-        const settingsPanel = document.getElementById('settingsPanel');
-        const closeSettingsBtn = document.getElementById('closeSettingsBtn');
-        const saveSettingsBtn = document.getElementById('saveSettingsBtn');
-        const providerCards = document.querySelectorAll('.provider-card');
-        const apiKeySection = document.getElementById('apiKeySection');
-        const apiKeyInput = document.getElementById('apiKeyInput');
-        const modelInput = document.getElementById('modelInput');
-        const modelInputGroup = document.getElementById('modelInputGroup');
-        const apiKeyInfo = document.getElementById('apiKeyInfo');
-        const wordCountInput = document.getElementById('wordCountInput');
-        const difficultyInput = document.getElementById('difficultyInput');
-        const currentProviderIcon = document.getElementById('currentProviderIcon');
-        const currentProviderName = document.getElementById('currentProviderName');
-        const toast = document.getElementById('toast');
-        const toastIcon = document.getElementById('toastIcon');
-        const toastMessage = document.getElementById('toastMessage');
-
-        // Game State
-        let words = [];
-        let currentWordIndex = 0;
-        let startTime = null;
-        let timerInterval = null;
-        let isRacing = false;
-        let totalKeystrokes = 0;
-        let errorCount = 0;
-        let correctWords = 0;
-        let userProgress = 0;
-
-        // Settings State
-        let currentProvider = 'puter';
-        let apiKeys = {
-            openai: '',
-            gemini: '',
-            anthropic: '',
-            openrouter: ''
-        };
-        let customModels = {
-            openai: 'gpt-4',
-            gemini: 'gemini-pro',
-            anthropic: 'claude-3-opus-20240229',
-            openrouter: ''
+        // --- LOCAL STORAGE MANAGER ---
+        const Storage = {
+            saveDiff(val) {
+                localStorage.setItem('raftaar_difficulty', val);
+            },
+            getDiff() {
+                return localStorage.getItem('raftaar_difficulty') || 5;
+            }
         };
 
-        // Load saved settings
-        function loadSettings() {
-            const saved = localStorage.getItem('raftaar-settings');
-            if (saved) {
-                const settings = JSON.parse(saved);
-                currentProvider = settings.provider || 'puter';
-                apiKeys = settings.apiKeys || apiKeys;
-                customModels = settings.customModels || customModels;
-                wordCountInput.value = settings.wordCount || 25;
-                difficultyInput.value = settings.difficulty || 'medium';
+        // --- AUDIO ENGINE ---
+        const Audio = {
+            ctx: null,
+            init() {
+                if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                if (this.ctx.state === 'suspended') this.ctx.resume();
+            },
+            play(type) {
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.connect(gain); gain.connect(this.ctx.destination);
+
+                const t = this.ctx.currentTime;
                 
-                // Update UI
-                providerCards.forEach(card => {
-                    if (card.dataset.provider === currentProvider) {
-                        card.classList.add('selected');
+                if(type === 'key') {
+                    osc.frequency.setValueAtTime(600, t); gain.gain.setValueAtTime(0.02, t);
+                    osc.start(); osc.stop(t + 0.05);
+                } else if (type === 'word') {
+                    osc.frequency.setValueAtTime(1200, t); gain.gain.setValueAtTime(0.05, t);
+                    osc.start(); osc.stop(t + 0.1);
+                } else if (type === 'error') {
+                    osc.type = 'sawtooth'; osc.frequency.setValueAtTime(100, t); gain.gain.setValueAtTime(0.1, t);
+                    osc.start(); osc.stop(t + 0.15);
+                } else if (type === 'win') {
+                    [0, 0.1, 0.2].forEach((d, i) => {
+                        const o = this.ctx.createOscillator(); const g = this.ctx.createGain();
+                        o.connect(g); g.connect(this.ctx.destination);
+                        o.frequency.value = 400 + (i*200); o.type = 'triangle';
+                        g.gain.exponentialRampToValueAtTime(0.0001, t + d + 1);
+                        o.start(t + d); o.stop(t + d + 1);
+                    });
+                }
+            }
+        };
+
+        // --- AI GENERATOR ---
+        const AI = {
+            getPrompt(level) {
+                let complexity = "";
+                let words = 25;
+
+                if(level <= 3) {
+                    complexity = "very simple words, short sentences (e.g. 'राम घर जाता है')";
+                    words = 20;
+                } else if (level <= 7) {
+                    complexity = "standard daily conversation, moderate vocabulary";
+                    words = 30;
+                } else {
+                    complexity = "complex literary Hindi, shuddh hindi words";
+                    words = 40;
+                }
+                
+                document.getElementById('aiPromptDetails').innerText = `Level ${level}: ${complexity.split(',')[0]}...`;
+
+                return `Generate a ${words}-word paragraph in Hindi (Devanagari). 
+                        Difficulty: ${level}/10. Context: ${complexity}. 
+                        Rules: No English, No Punctuation, plain text.`;
+            },
+
+            async fetch() {
+                const level = document.getElementById('diffSlider').value;
+                const prompt = this.getPrompt(level);
+                
+                try {
+                    const res = await puter.ai.chat(prompt, { model: 'gpt-4o-mini' });
+                    let text = res.message.content.replace(/[^\u0900-\u097F\s]/g, '').replace(/\s+/g, ' ').trim();
+                    if(text.length < 10) throw new Error("Short text");
+                    return text;
+                } catch(e) {
+                    return "असफलता एक चुनौती है इसे स्वीकार करो क्या कमी रह गई देखो और सुधार करो";
+                }
+            }
+        };
+
+        // --- GAME LOGIC ---
+        const Game = {
+            words: [], idx: 0, active: false,
+            startTime: 0, timerInterval: null,
+            stats: { keys: 0, errors: 0, correct: 0 },
+
+            init() {
+                // UI Reset
+                document.getElementById('resultModal').classList.remove('show');
+                document.getElementById('startScreen').classList.add('hidden');
+                document.getElementById('loader').classList.remove('hidden');
+                document.getElementById('input').value = "";
+                document.getElementById('input').disabled = true;
+                document.getElementById('userCar').style.left = "0%";
+                document.getElementById('bot1').style.left = "0%";
+                document.getElementById('wpm').innerText = "0";
+                document.getElementById('timer').innerText = "00:00";
+                
+                // Fetch Text
+                AI.fetch().then(text => {
+                    this.setup(text);
+                });
+            },
+
+            setup(text) {
+                this.words = text.split(' ');
+                this.idx = 0;
+                this.stats = { keys: 0, errors: 0, correct: 0 };
+
+                const html = this.words.map((w, i) => 
+                    `<span class="word ${i===0?'active':''}" id="w-${i}">` +
+                    w.split('').map(c => `<span class="char">${c}</span>`).join('') +
+                    `</span>`
+                ).join(' ');
+                document.getElementById('display').innerHTML = html;
+                
+                // Show Start Button instead of Countdown
+                document.getElementById('loader').classList.add('hidden');
+                document.getElementById('startScreen').classList.remove('hidden');
+            },
+
+            triggerRace() {
+                // Called when Start Button is clicked
+                document.getElementById('startScreen').classList.add('hidden');
+                Audio.init(); // Ensure audio context is ready
+                this.startCountdown();
+            },
+
+            startCountdown() {
+                const el = document.getElementById('countdown');
+                const num = document.getElementById('cntNum');
+                el.classList.remove('hidden');
+                let c = 3; num.innerText = c;
+
+                const i = setInterval(() => {
+                    c--;
+                    if(c>0) { num.innerText = c; Audio.play('key'); }
+                    else {
+                        clearInterval(i);
+                        num.innerText = "GO!";
+                        Audio.play('word');
+                        setTimeout(() => {
+                            el.classList.add('hidden');
+                            this.start();
+                        }, 500);
+                    }
+                }, 1000);
+            },
+
+            start() {
+                this.active = true;
+                this.startTime = Date.now();
+                const inp = document.getElementById('input');
+                inp.disabled = false;
+                inp.focus();
+
+                this.timerInterval = setInterval(() => this.updateStats(), 500);
+                this.startBot();
+            },
+
+            handleInput(val) {
+                if(!this.active) return;
+                
+                const target = this.words[this.idx];
+                const inp = document.getElementById('input');
+
+                if(val.endsWith(' ')) {
+                    const typed = val.trim();
+                    if(typed === target) {
+                        this.stats.correct++;
+                        this.stats.keys += typed.length + 1;
+                        this.idx++;
+                        inp.value = "";
+                        Audio.play('word');
+                        
+                        if(this.idx >= this.words.length) this.end();
+                        else this.highlightNext();
                     } else {
-                        card.classList.remove('selected');
+                        this.stats.errors++;
+                        Audio.play('error');
+                        inp.value = typed; 
+                        const wEl = document.getElementById(`w-${this.idx}`);
+                        wEl.classList.add('error-shake');
+                        setTimeout(() => wEl.classList.remove('error-shake'), 400);
+                    }
+                    return;
+                }
+
+                const wEl = document.getElementById(`w-${this.idx}`);
+                const chars = wEl.querySelectorAll('.char');
+                chars.forEach((c, i) => {
+                    if(i < val.length) {
+                        c.className = val[i] === target[i] ? 'char correct' : 'char incorrect';
+                    } else {
+                        c.className = 'char';
                     }
                 });
                 
-                updateProviderUI();
-            }
-        }
+                if(val.length > 0) Audio.play('key');
+            },
 
-        // Save settings
-        function saveSettings() {
-            const settings = {
-                provider: currentProvider,
-                apiKeys,
-                customModels,
-                wordCount: parseInt(wordCountInput.value),
-                difficulty: difficultyInput.value
-            };
-            localStorage.setItem('raftaar-settings', JSON.stringify(settings));
-            showToast('Settings saved successfully!', 'success');
-        }
+            highlightNext() {
+                const old = document.getElementById(`w-${this.idx-1}`);
+                old.className = 'word'; 
+                old.querySelectorAll('.char').forEach(c => c.className = 'char correct');
 
-        // Provider card selection
-        providerCards.forEach(card => {
-            card.addEventListener('click', () => {
-                providerCards.forEach(c => c.classList.remove('selected'));
-                card.classList.add('selected');
-                currentProvider = card.dataset.provider;
-                updateProviderUI();
-            });
-        });
-
-        // Update provider UI
-        function updateProviderUI() {
-            const providerInfo = {
-                puter: {
-                    icon: '🟢',
-                    name: 'Puter AI',
-                    needsKey: false,
-                    infoLink: ''
-                },
-                openai: {
-                    icon: '🟠',
-                    name: 'OpenAI',
-                    needsKey: true,
-                    infoLink: '<a href="https://platform.openai.com/api-keys" target="_blank">OpenAI Platform</a>',
-                    showModel: true
-                },
-                gemini: {
-                    icon: '🔵',
-                    name: 'Google Gemini',
-                    needsKey: true,
-                    infoLink: '<a href="https://makersuite.google.com/app/apikey" target="_blank">Google AI Studio</a>',
-                    showModel: false
-                },
-                anthropic: {
-                    icon: '🟣',
-                    name: 'Anthropic',
-                    needsKey: true,
-                    infoLink: '<a href="https://console.anthropic.com/settings/keys" target="_blank">Anthropic Console</a>',
-                    showModel: true
-                },
-                openrouter: {
-                    icon: '🌐',
-                    name: 'OpenRouter',
-                    needsKey: true,
-                    infoLink: '<a href="https://openrouter.ai/keys" target="_blank">OpenRouter</a>',
-                    showModel: true
-                }
-            };
-
-            const info = providerInfo[currentProvider];
-            currentProviderIcon.textContent = info.icon;
-            currentProviderName.textContent = info.name;
-
-            if (info.needsKey) {
-                apiKeySection.style.display = 'block';
-                apiKeyInput.value = apiKeys[currentProvider] || '';
-                apiKeyInfo.innerHTML = info.infoLink;
+                const curr = document.getElementById(`w-${this.idx}`);
+                curr.className = 'word active';
                 
-                if (info.showModel) {
-                    modelInputGroup.style.display = 'block';
-                    modelInput.value = customModels[currentProvider] || '';
-                } else {
-                    modelInputGroup.style.display = 'none';
+                const container = document.getElementById('display');
+                if(curr.offsetTop > container.offsetTop + 80) {
+                    curr.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
-            } else {
-                apiKeySection.style.display = 'none';
-            }
-        }
 
-        // Save API key and model
-        saveSettingsBtn.addEventListener('click', () => {
-            if (currentProvider !== 'puter') {
-                apiKeys[currentProvider] = apiKeyInput.value;
-                if (modelInput.value) {
-                    customModels[currentProvider] = modelInput.value;
-                }
-            }
-            saveSettings();
-        });
+                document.getElementById('userCar').style.left = (this.idx / this.words.length) * 100 + "%";
+            },
 
-        // Settings panel toggle
-        settingsBtn.addEventListener('click', () => {
-            settingsPanel.classList.add('active');
-            settingsBtn.classList.add('active');
-        });
-
-        closeSettingsBtn.addEventListener('click', () => {
-            settingsPanel.classList.remove('active');
-            settingsBtn.classList.remove('active');
-        });
-
-        // Info button
-        infoBtn.addEventListener('click', () => {
-            showToast('रफ़्तार Pro - Multi-LLM powered Hindi typing racer', 'success');
-        });
-
-        // Toast notification
-        function showToast(message, type = 'success') {
-            toastMessage.textContent = message;
-            toast.className = `toast ${type}`;
-            toastIcon.textContent = type === 'success' ? '✓' : '✗';
-            toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-
-        // Bots
-        const bots = [
-            { id: 'bot1Car', base: 35, progress: 0, interval: null },
-            { id: 'bot2Car', base: 50, progress: 0, interval: null },
-            { id: 'bot3Car', base: 65, progress: 0, interval: null }
-        ];
-
-        const fallbackTexts = [
-            "भारत एक महान देश है। यहाँ अनेक भाषाएँ बोली जाती हैं। हमें अपनी संस्कृति पर गर्व है। विविधता में एकता हमारी पहचान है।",
-            "समय का सदुपयोग सफलता की कुंजी है। हर पल को महत्वपूर्ण समझना चाहिए। परिश्रम से ही लक्ष्य प्राप्त होते हैं।",
-            "शिक्षा सबसे शक्तिशाली हथियार है। इससे हम दुनिया बदल सकते हैं। ज्ञान ही सच्ची शक्ति है। सीखना कभी बंद नहीं होना चाहिए।",
-            "प्रकृति हमारी सबसे अच्छी शिक्षक है। इससे हमें बहुत कुछ सीखना चाहिए। पेड़ पौधे हमारे मित्र हैं। पर्यावरण संरक्षण आवश्यक है।",
-            "परिश्रम से ही सफलता मिलती है। बिना मेहनत कुछ भी हासिल नहीं होता। धैर्य और निरंतरता महत्वपूर्ण हैं। कभी हार नहीं माननी चाहिए।"
-        ];
-
-        // Sound Effects
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        let audioCtx;
-
-        function playSound(type) {
-            if (!audioCtx) audioCtx = new AudioContext();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-
-            const sounds = {
-                error: { freq: 200, type: 'sawtooth', duration: 0.1, volume: 0.1 },
-                correct: { freq: 600, type: 'sine', duration: 0.08, volume: 0.08 },
-                word: { freq: 880, type: 'sine', duration: 0.1, volume: 0.1 },
-                countdown: { freq: 440, type: 'sine', duration: 0.2, volume: 0.15 },
-                go: { freq: 880, type: 'sine', duration: 0.3, volume: 0.2 }
-            };
-
-            if (type === 'finish') {
-                [523, 659, 784].forEach((freq, i) => {
-                    const o = audioCtx.createOscillator();
-                    const g = audioCtx.createGain();
-                    o.connect(g); g.connect(audioCtx.destination);
-                    o.frequency.value = freq; o.type = 'sine';
-                    g.gain.setValueAtTime(0.1, audioCtx.currentTime + i * 0.1);
-                    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i * 0.1 + 0.3);
-                    o.start(audioCtx.currentTime + i * 0.1);
-                    o.stop(audioCtx.currentTime + i * 0.1 + 0.3);
-                });
-            } else if (sounds[type]) {
-                const s = sounds[type];
-                osc.frequency.value = s.freq; osc.type = s.type;
-                gain.gain.setValueAtTime(s.volume, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + s.duration);
-                osc.start(); osc.stop(audioCtx.currentTime + s.duration);
-            }
-        }
-
-        // AI Text Generation with Multiple Providers
-        async function generateTextWithAI() {
-            const wordCount = parseInt(wordCountInput.value) || 25;
-            const difficulty = difficultyInput.value;
-            
-            const difficultyPrompts = {
-                easy: "simple and common words",
-                medium: "moderate vocabulary",
-                hard: "complex vocabulary and longer sentences"
-            };
-
-            const basePrompt = `Generate a ${wordCount}-word meaningful paragraph in Hindi (Devanagari script only) using ${difficultyPrompts[difficulty]}. The text should be engaging and natural. No English words. No quotes. Only Hindi text in Devanagari script.`;
-
-            try {
-                let response;
+            updateStats() {
+                const elapsed = (Date.now() - this.startTime) / 1000 / 60;
+                const wpm = Math.round(this.stats.correct / elapsed) || 0;
+                document.getElementById('wpm').innerText = wpm;
                 
-                switch (currentProvider) {
-                    case 'puter':
-                        response = await puter.ai.chat(basePrompt, { model: "gemini-3-flash-preview" });
-                        return response.message.content.trim().replace(/^['"]|['"]$/g, '');
-
-                    case 'openai':
-                        if (!apiKeys.openai) throw new Error('OpenAI API key not configured');
-                        response = await fetch('https://api.openai.com/v1/chat/completions', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${apiKeys.openai}`
-                            },
-                            body: JSON.stringify({
-                                model: customModels.openai || 'gpt-4',
-                                messages: [{ role: 'user', content: basePrompt }],
-                                temperature: 0.7
-                            })
-                        });
-                        const openaiData = await response.json();
-                        if (!response.ok) throw new Error(openaiData.error?.message || 'OpenAI API error');
-                        return openaiData.choices[0].message.content.trim().replace(/^['"]|['"]$/g, '');
-
-                    case 'gemini':
-                        if (!apiKeys.gemini) throw new Error('Gemini API key not configured');
-                        response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKeys.gemini}`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                contents: [{ parts: [{ text: basePrompt }] }]
-                            })
-                        });
-                        const geminiData = await response.json();
-                        if (!response.ok) throw new Error(geminiData.error?.message || 'Gemini API error');
-                        return geminiData.candidates[0].content.parts[0].text.trim().replace(/^['"]|['"]$/g, '');
-
-                    case 'anthropic':
-                        if (!apiKeys.anthropic) throw new Error('Anthropic API key not configured');
-                        response = await fetch('https://api.anthropic.com/v1/messages', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'x-api-key': apiKeys.anthropic,
-                                'anthropic-version': '2023-06-01'
-                            },
-                            body: JSON.stringify({
-                                model: customModels.anthropic || 'claude-3-opus-20240229',
-                                max_tokens: 1024,
-                                messages: [{ role: 'user', content: basePrompt }]
-                            })
-                        });
-                        const anthropicData = await response.json();
-                        if (!response.ok) throw new Error(anthropicData.error?.message || 'Anthropic API error');
-                        return anthropicData.content[0].text.trim().replace(/^['"]|['"]$/g, '');
-
-                    case 'openrouter':
-                        if (!apiKeys.openrouter) throw new Error('OpenRouter API key not configured');
-                        const model = customModels.openrouter || 'google/gemini-pro';
-                        response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${apiKeys.openrouter}`,
-                                'HTTP-Referer': window.location.href,
-                                'X-Title': 'Raftaar Hindi TypeRacer'
-                            },
-                            body: JSON.stringify({
-                                model: model,
-                                messages: [{ role: 'user', content: basePrompt }]
-                            })
-                        });
-                        const openrouterData = await response.json();
-                        if (!response.ok) throw new Error(openrouterData.error?.message || 'OpenRouter API error');
-                        return openrouterData.choices[0].message.content.trim().replace(/^['"]|['"]$/g, '');
-
-                    default:
-                        throw new Error('Invalid provider');
-                }
-            } catch (error) {
-                console.error('AI Generation Error:', error);
-                throw error;
-            }
-        }
-
-        async function fetchNewRace() {
-            resultsModal.classList.add('hidden');
-            loadingOverlay.classList.add('active');
-            resetGameState();
-
-            try {
-                const timeout = new Promise((_, rej) => 
-                    setTimeout(() => rej(new Error("Request timeout")), 15000)
-                );
-                const textPromise = generateTextWithAI();
-                const text = await Promise.race([textPromise, timeout]);
+                const secs = Math.floor(elapsed * 60);
+                document.getElementById('timer').innerText = `${Math.floor(secs/60)}:${(secs%60).toString().padStart(2,'0')}`;
                 
-                if (!/[\u0900-\u097F]/.test(text)) {
-                    throw new Error("Invalid Hindi text");
-                }
-                
-                setupText(text);
-                showToast(`Text generated using ${currentProviderName.textContent}`, 'success');
-            } catch (e) {
-                console.warn("Falling back to preset text:", e);
-                showToast('Using fallback text', 'error');
-                setupText(fallbackTexts[Math.floor(Math.random() * fallbackTexts.length)]);
-            } finally {
-                loadingOverlay.classList.remove('active');
-                startCountdown();
+                const total = this.stats.keys + this.stats.errors;
+                const acc = total ? Math.round(((total - this.stats.errors)/total)*100) : 100;
+                document.getElementById('accuracy').innerText = acc + "%";
+            },
+
+            startBot() {
+                const bot = document.getElementById('bot1');
+                let pos = 0; const speed = 0.5 + Math.random() * 0.5;
+                const int = setInterval(() => {
+                    if(!this.active) clearInterval(int);
+                    pos += speed;
+                    if(pos > 100) pos = 100;
+                    bot.style.left = pos + "%";
+                }, 500);
+            },
+
+            end() {
+                this.active = false;
+                clearInterval(this.timerInterval);
+                document.getElementById('input').disabled = true;
+                Audio.play('win');
+                confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
+
+                document.getElementById('finalWpm').innerText = document.getElementById('wpm').innerText;
+                document.getElementById('finalAcc').innerText = document.getElementById('accuracy').innerText;
+                document.getElementById('resultModal').classList.add('show');
             }
-        }
+        };
 
-        function resetGameState() {
-            typeInput.disabled = true;
-            typeInput.value = '';
-            timerEl.textContent = "00:00";
-            wpmDisplayEl.innerHTML = "0 <small>WPM</small>";
-            liveAccuracyEl.textContent = "100%";
-            livePositionEl.textContent = "1st";
-            userCar.style.left = '0%';
-            bots.forEach(b => { 
-                b.progress = 0; 
-                document.getElementById(b.id).style.left = '0%'; 
-                clearInterval(b.interval); 
-            });
-            clearInterval(timerInterval);
-            isRacing = false; 
-            startTime = null; 
-            totalKeystrokes = 0; 
-            errorCount = 0; 
-            userProgress = 0;
-            currentWordIndex = 0; 
-            correctWords = 0; 
-            words = [];
-        }
-
-        function setupText(text) {
-            const cleanText = text.replace(/\s+/g, ' ').trim();
-            words = cleanText.split(' ');
-
-            textDisplay.innerHTML = '';
-            words.forEach((word, wordIdx) => {
-                const wordSpan = document.createElement('span');
-                wordSpan.className = 'word';
-                wordSpan.dataset.index = wordIdx;
-
-                word.split('').forEach(char => {
-                    const charSpan = document.createElement('span');
-                    charSpan.innerText = char;
-                    charSpan.className = 'char';
-                    wordSpan.appendChild(charSpan);
-                });
-
-                textDisplay.appendChild(wordSpan);
-
-                if (wordIdx < words.length - 1) {
-                    const spaceSpan = document.createElement('span');
-                    spaceSpan.innerText = ' ';
-                    spaceSpan.className = 'char space';
-                    textDisplay.appendChild(spaceSpan);
-                }
-            });
-
-            highlightCurrentWord();
-        }
-
-        function highlightCurrentWord() {
-            const wordSpans = textDisplay.querySelectorAll('.word');
-            wordSpans.forEach((ws, i) => {
-                ws.classList.remove('current-word', 'completed-word');
-                if (i < currentWordIndex) ws.classList.add('completed-word');
-                else if (i === currentWordIndex) ws.classList.add('current-word');
-            });
-
-            const allChars = textDisplay.querySelectorAll('.char');
-            let charCount = 0;
-            for (let i = 0; i < currentWordIndex && i < words.length; i++) {
-                charCount += words[i].length + 1;
-            }
-            allChars.forEach((c, idx) => {
-                if (idx < charCount - 1) c.classList.add('correct');
-            });
-        }
-
-        function startCountdown() {
-            countdownOverlay.classList.add('active');
-            let count = 3;
-            countdownNumber.textContent = count;
-            playSound('countdown');
-
-            const countInterval = setInterval(() => {
-                count--;
-                if (count > 0) {
-                    countdownNumber.textContent = count;
-                    countdownNumber.style.animation = 'none';
-                    void countdownNumber.offsetWidth;
-                    countdownNumber.style.animation = 'countPulse 1s cubic-bezier(0.34, 1.56, 0.64, 1)';
-                    playSound('countdown');
-                } else if (count === 0) {
-                    countdownNumber.textContent = "GO!";
-                    countdownNumber.style.background = 'linear-gradient(135deg, var(--accent), var(--accent-warm))';
-                    countdownNumber.style.backgroundClip = 'text';
-                    countdownNumber.style.webkitBackgroundClip = 'text';
-                    playSound('go');
-                } else {
-                    clearInterval(countInterval);
-                    countdownOverlay.classList.remove('active');
-                    countdownNumber.style.background = 'linear-gradient(135deg, var(--primary), var(--secondary))';
-                    countdownNumber.style.backgroundClip = 'text';
-                    countdownNumber.style.webkitBackgroundClip = 'text';
-                    typeInput.disabled = false;
-                    typeInput.focus();
-                    textDisplay.classList.add('active');
-                }
-            }, 1000);
-        }
-
-        function startRace() {
-            isRacing = true;
-            startTime = new Date();
-
-            bots.forEach(bot => {
-                const speed = bot.base + (Math.random() * 15 - 7);
-                const wordsCount = words.length;
-                const duration = (wordsCount / speed) * 60;
-                const tick = 100;
-                const inc = 100 / ((duration * 1000) / tick);
-                bot.interval = setInterval(() => {
-                    bot.progress += inc;
-                    if (bot.progress >= 100) { 
-                        bot.progress = 100; 
-                        clearInterval(bot.interval); 
-                    }
-                    document.getElementById(bot.id).style.left = `${bot.progress}%`;
-                }, tick);
-            });
-
-            timerInterval = setInterval(updateLiveStats, 250);
-        }
-
-        function updateLiveStats() {
-            const now = new Date();
-            const sec = Math.floor((now - startTime) / 1000);
-            timerEl.textContent = `${String(Math.floor(sec / 60)).padStart(2, '0')}:${String(sec % 60).padStart(2, '0')}`;
-
-            const wpm = calcWPM();
-            wpmDisplayEl.innerHTML = `${wpm} <small>WPM</small>`;
-
-            const acc = totalKeystrokes > 0 ? Math.max(0, Math.round(((totalKeystrokes - errorCount) / totalKeystrokes) * 100)) : 100;
-            liveAccuracyEl.textContent = `${acc}%`;
-
-            livePositionEl.textContent = getPosition();
-        }
-
-        function getPosition() {
-            let rank = 1;
-            bots.forEach(b => { if (b.progress > userProgress) rank++; });
-            return ['1st', '2nd', '3rd', '4th'][rank - 1];
-        }
-
-        function handleInput(e) {
-            if (!isRacing && typeInput.value.length > 0) startRace();
-            if (!isRacing) return;
-
-            const input = typeInput.value;
-            const currentWord = words[currentWordIndex];
-
-            if (input.endsWith(' ')) {
-                const typedWord = input.trim();
-                totalKeystrokes += typedWord.length + 1;
-
-                if (typedWord === currentWord) {
-                    playSound('word');
-                    correctWords++;
-                    markWordComplete(currentWordIndex, true);
-                    currentWordIndex++;
-                    typeInput.value = '';
-
-                    userProgress = (currentWordIndex / words.length) * 100;
-                    userCar.style.left = `${userProgress}%`;
-
-                    highlightCurrentWord();
-
-                    if (currentWordIndex >= words.length) {
-                        finishRace();
-                        return;
-                    }
-                } else {
-                    errorCount += Math.abs(typedWord.length - currentWord.length) + countDifferences(typedWord, currentWord);
-                    playSound('error');
-                    shakeInput();
-                    typeInput.value = typedWord;
-                }
-                return;
-            }
-
-            totalKeystrokes++;
-            updateCurrentWordHighlight(input);
-        }
-
-        function countDifferences(a, b) {
-            let diff = 0;
-            const len = Math.max(a.length, b.length);
-            for (let i = 0; i < len; i++) {
-                if (a[i] !== b[i]) diff++;
-            }
-            return diff;
-        }
-
-        function updateCurrentWordHighlight(input) {
-            const wordSpan = textDisplay.querySelector(`.word[data-index="${currentWordIndex}"]`);
-            if (!wordSpan) return;
-
-            const chars = wordSpan.querySelectorAll('.char');
-            const currentWord = words[currentWordIndex];
-
-            chars.forEach((charEl, i) => {
-                charEl.classList.remove('correct', 'incorrect', 'current');
-                const typedChar = input[i];
-
-                if (typedChar == null) {
-                    if (i === input.length) charEl.classList.add('current');
-                } else if (typedChar === currentWord[i]) {
-                    charEl.classList.add('correct');
-                } else {
-                    charEl.classList.add('incorrect');
-                }
-            });
-
-            if (input.length > currentWord.length) {
-                chars[chars.length - 1].classList.add('incorrect');
-            }
-        }
-
-        function markWordComplete(wordIdx, isCorrect) {
-            const wordSpan = textDisplay.querySelector(`.word[data-index="${wordIdx}"]`);
-            if (!wordSpan) return;
-
-            wordSpan.classList.add('completed-word');
-            const chars = wordSpan.querySelectorAll('.char');
-            chars.forEach(c => {
-                c.classList.remove('current', 'incorrect');
-                c.classList.add('correct');
-            });
-        }
-
-        function shakeInput() {
-            typeInput.classList.add('shake');
-            setTimeout(() => typeInput.classList.remove('shake'), 400);
-        }
-
-        function calcWPM() {
-            if (!startTime) return 0;
-            const min = (new Date() - startTime) / 60000;
-            if (min === 0) return 0;
-            return Math.round(correctWords / min);
-        }
-
-        function finishRace() {
-            isRacing = false;
-            clearInterval(timerInterval);
-            bots.forEach(b => clearInterval(b.interval));
-            textDisplay.classList.remove('active');
-            typeInput.disabled = true;
-
-            playSound('finish');
-
-            const wpm = calcWPM();
-            const sec = Math.floor((new Date() - startTime) / 1000);
-            const acc = totalKeystrokes > 0 ? Math.max(0, Math.round(((totalKeystrokes - errorCount) / totalKeystrokes) * 100)) : 100;
-            const pos = getPosition();
-
-            finalWpmEl.textContent = wpm;
-            finalAccuracyEl.textContent = `${acc}%`;
-            finalTimeEl.textContent = `${sec}s`;
-
-            const positions = {
-                '1st': { icon: '🥇', title: 'Victory!', text: 'You finished 1st!', confetti: 150 },
-                '2nd': { icon: '🥈', title: 'Great Job!', text: 'You finished 2nd!', confetti: 80 },
-                '3rd': { icon: '🥉', title: 'Good Effort!', text: 'You finished 3rd!', confetti: 0 },
-                '4th': { icon: '🏁', title: 'Race Complete', text: 'You finished 4th. Keep practicing!', confetti: 0 }
-            };
-
-            const result = positions[pos];
-            trophyIconEl.textContent = result.icon;
-            resultTitleEl.textContent = result.title;
-            positionTextEl.textContent = result.text;
-
-            if (result.confetti > 0) {
-                confetti({ 
-                    particleCount: result.confetti, 
-                    spread: 70, 
-                    origin: { y: 0.6 },
-                    colors: ['#00d9ff', '#ff006e', '#39ff14', '#ffbe0b']
-                });
-            }
-
-            resultsModal.classList.remove('hidden');
-            modalRestartBtn.focus();
-        }
-
-        // Event Listeners
-        typeInput.addEventListener('input', handleInput);
-        typeInput.addEventListener('paste', e => e.preventDefault());
-        modalRestartBtn.addEventListener('click', fetchNewRace);
+        // --- UI & EVENTS ---
+        const slider = document.getElementById('diffSlider');
+        const diffVal = document.getElementById('diffValue');
         
-        document.addEventListener('keydown', e => {
-            if (e.key === 'Enter' && !resultsModal.classList.contains('hidden')) {
-                fetchNewRace();
-            }
-            if (e.key === 'Escape' && settingsPanel.classList.contains('active')) {
-                settingsPanel.classList.remove('active');
-                settingsBtn.classList.remove('active');
-            }
+        // 1. Load Saved Settings
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedDiff = Storage.getDiff();
+            slider.value = savedDiff;
+            updateSliderUI(savedDiff);
+            Game.init();
         });
 
-        // Initialize
-        loadSettings();
-        window.addEventListener('DOMContentLoaded', fetchNewRace);
+        // 2. Handle Slider Change
+        slider.addEventListener('input', (e) => {
+            const v = e.target.value;
+            Storage.saveDiff(v);
+            updateSliderUI(v);
+        });
+
+        function updateSliderUI(v) {
+            diffVal.innerText = `Level ${v}`;
+            if(v<=3) diffVal.style.color = 'var(--success)';
+            else if(v<=7) diffVal.style.color = 'var(--primary)';
+            else diffVal.style.color = 'var(--error)';
+        }
+
+        // 3. Start Button
+        document.getElementById('startBtn').addEventListener('click', () => Game.triggerRace());
+
+        document.getElementById('input').addEventListener('input', (e) => Game.handleInput(e.target.value));
+        document.getElementById('input').addEventListener('paste', (e) => e.preventDefault());
 
     </script>
 </body>
-
 </html>
