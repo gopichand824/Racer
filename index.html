@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="hi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>रफ़्तार | Hindi TypeRacer</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://js.puter.com/v2/"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Mukta:wght@300;400;700&family=Outfit:wght@300;500;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.0/dist/confetti.browser.min.js"></script>
+</head>
+
+<body>
+    <!-- Animated Background Particles -->
+    <div class="bg-particles" id="bgParticles"></div>
+
+    <div class="app-container">
+        <header>
+            <div class="logo">
+                <span class="logo-icon">⚡</span>
+                <h1>रफ़्तार</h1>
+            </div>
+            <p class="tagline">The Ultimate Hindi Typing Challenge</p>
+        </header>
+
+        <main>
+            <!-- Stats Bar -->
+            <div class="stats-bar">
+                <div class="stat-box">
+                    <span class="stat-icon">⏱️</span>
+                    <div>
+                        <span class="stat-label">Time</span>
+                        <span class="stat-value" id="timer">00:00</span>
+                    </div>
+                </div>
+                <div class="stat-box highlight">
+                    <span class="stat-icon">🚀</span>
+                    <div>
+                        <span class="stat-label">Speed</span>
+                        <span class="stat-value" id="wpmDisplay">0 <small>WPM</small></span>
+                    </div>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-icon">🎯</span>
+                    <div>
+                        <span class="stat-label">Accuracy</span>
+                        <span class="stat-value" id="liveAccuracy">100%</span>
+                    </div>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-icon">🏆</span>
+                    <div>
+                        <span class="stat-label">Position</span>
+                        <span class="stat-value" id="livePosition">1st</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Race Track -->
+            <div class="race-track">
+                <div class="lane user-lane">
+                    <div class="racer-avatar">👤</div>
+                    <div class="racer-name">You</div>
+                    <div class="track-line">
+                        <div class="car user-car" id="userCar">🏎️</div>
+                    </div>
+                    <div class="finish-flag">🏁</div>
+                </div>
+                <div class="lane">
+                    <div class="racer-avatar">🤖</div>
+                    <div class="racer-name">Aarav</div>
+                    <div class="track-line">
+                        <div class="car bot-car" id="bot1Car">🚙</div>
+                    </div>
+                    <div class="finish-flag">🏁</div>
+                </div>
+                <div class="lane">
+                    <div class="racer-avatar">🤖</div>
+                    <div class="racer-name">Vaani</div>
+                    <div class="track-line">
+                        <div class="car bot-car" id="bot2Car">🚗</div>
+                    </div>
+                    <div class="finish-flag">🏁</div>
+                </div>
+                <div class="lane">
+                    <div class="racer-avatar">🤖</div>
+                    <div class="racer-name">Vihaan</div>
+                    <div class="track-line">
+                        <div class="car bot-car" id="bot3Car">🚕</div>
+                    </div>
+                    <div class="finish-flag">🏁</div>
+                </div>
+            </div>
+
+            <!-- Typing Area -->
+            <div class="typing-container">
+                <!-- Countdown Overlay -->
+                <div class="countdown-overlay" id="countdownOverlay">
+                    <div class="countdown-number" id="countdownNumber">3</div>
+                    <p>Get Ready!</p>
+                </div>
+
+                <!-- Loading Overlay -->
+                <div class="loading-overlay" id="loadingOverlay">
+                    <div class="spinner"></div>
+                    <p>Generating Hindi Text with AI...</p>
+                </div>
+
+                <div class="text-display" id="textDisplay"></div>
+
+                <div class="input-area">
+                    <input type="text" id="typeInput" class="main-input" placeholder="Race starts when you type..."
+                        autocomplete="off" spellcheck="false" disabled>
+                </div>
+
+                <div class="keyboard-hint">
+                    <kbd>Inscript</kbd> / <kbd>Mangal</kbd> Keyboard Layout
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Built with ❤️ for Hindi Typers | AI Powered by Puter.js</p>
+        </footer>
+    </div>
+
+    <!-- Results Modal -->
+    <div id="resultsModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="trophy-icon" id="trophyIcon">🏆</div>
+            <h2 id="resultTitle">Race Complete!</h2>
+            <p id="positionText" class="position-text"></p>
+
+            <div class="results-stats">
+                <div class="result-stat">
+                    <div class="result-icon">🚀</div>
+                    <div class="result-value" id="finalWpm">0</div>
+                    <div class="result-label">WPM</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-icon">🎯</div>
+                    <div class="result-value" id="finalAccuracy">100%</div>
+                    <div class="result-label">Accuracy</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-icon">⏱️</div>
+                    <div class="result-value" id="finalTime">0s</div>
+                    <div class="result-label">Time</div>
+                </div>
+            </div>
+
+            <button id="modalRestartBtn" class="primary-btn">
+                <span>🔄</span> Race Again
+            </button>
+            <p class="shortcut-hint">Press <kbd>Enter</kbd> to restart</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
