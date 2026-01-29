@@ -309,27 +309,51 @@
 
         // --- AI GENERATOR ---
         const AI = {
-            getPrompt(level) {
-                let complexity = "";
-                let words = 25;
+            // Store previously generated paragraphs (session-based)
+const previousHindiOutputs = [];
 
-                if(level <= 3) {
-                    complexity = "very simple words, short sentences (e.g. 'राम घर जाता है')";
-                    words = 20;
-                } else if (level <= 7) {
-                    complexity = "standard daily conversation, moderate vocabulary";
-                    words = 30;
-                } else {
-                    complexity = "complex literary Hindi, shuddh hindi words";
-                    words = 40;
-                }
-                
-                document.getElementById('aiPromptDetails').innerText = `Level ${level}: ${complexity.split(',')[0]}...`;
+function getPrompt(level) {
+    let complexity = "";
+    let words = 25;
 
-                return `Generate a ${words}-word paragraph in Hindi (Devanagari). 
-                        Difficulty: ${level}/10. Context: ${complexity}. 
-                        Rules: No English, No Punctuation, plain text.`;
-            },
+    if (level <= 3) {
+        complexity = "very simple Hindi words short sentences suitable for beginners like राम घर जाता है";
+        words = 20;
+    } else if (level <= 7) {
+        complexity = "standard daily conversation Hindi moderate vocabulary common situations";
+        words = 30;
+    } else {
+        complexity = "complex literary Hindi using shuddh Hindi vocabulary abstract ideas and rich expressions";
+        words = 40;
+    }
+
+    document.getElementById('aiPromptDetails').innerText =
+        `Level ${level}: ${complexity.split(" ").slice(0, 4).join(" ")}...`;
+
+    // Limit memory to last 5 generations to avoid token bloat
+    const recentHistory = previousHindiOutputs.slice(-5).join("\n");
+
+    return `
+Generate a completely new and unique ${words}-word paragraph in Hindi (Devanagari).
+
+Difficulty Level: ${level}/10
+Language Style: ${complexity}
+
+Strict Rules:
+- Do NOT repeat sentence structures, vocabulary, themes, or ideas from previous outputs
+- Avoid similarity in verbs, subjects, or narrative flow
+- Change topic, tone, and scenario every time
+- No English words
+- No punctuation marks
+- Plain text only
+
+Previously generated content (DO NOT imitate or reuse):
+${recentHistory}
+
+Output must feel entirely different from all previous ones.
+`;
+}
+,
 
             async fetch() {
                 const level = document.getElementById('diffSlider').value;
@@ -555,3 +579,4 @@
     </script>
 </body>
 </html>
+
