@@ -308,67 +308,105 @@
         };
 
         // --- AI GENERATOR ---
-        const AI = {
-            // Store previously generated paragraphs (session-based)
-const previousHindiOutputs = [];
+        // --- AI GENERATOR (Enhanced) ---
+const AI = {
+    // Memory to store previous generations (Session based)
+    history: [],
+    
+    // Rotation of focus areas to ensure all keys are covered over time
+    focusRotation: [
+        "Include words with many Matras (maatraa)",
+        "Focus on Conjunct consonants (Sanyuktakshar like क्ष, त्र, ज्ञ, आधा अक्षर)",
+        "Focus on Retroflex sounds (ट, ठ, ड, ढ, ण)",
+        "Focus on Nasal sounds (Anusvara and Chandrabindu)",
+        "General mixed vocabulary"
+    ],
+    rotationIndex: 0,
 
-function getPrompt(level) {
-    let complexity = "";
-    let words = 25;
+    getPrompt(level) {
+        let complexity = "";
+        let wordCount = 25;
+        
+        // 1. Define Complexity based on Level
+        if (level <= 3) {
+            complexity = "Simple Hindi, short sentences, basic vocabulary (e.g., 'राम घर जाता है'), avoid complex conjuncts.";
+            wordCount = 20;
+        } else if (level <= 7) {
+            complexity = "Standard Hindi (Khadi Boli), daily conversation, mixed sentence lengths.";
+            wordCount = 35;
+        } else {
+            complexity = "Shuddh Hindi (Formal), literary style, abstract concepts, rich vocabulary using Tatsam words.";
+            wordCount = 50;
+        }
 
-    if (level <= 3) {
-        complexity = "very simple Hindi words short sentences suitable for beginners like राम घर जाता है";
-        words = 20;
-    } else if (level <= 7) {
-        complexity = "standard daily conversation Hindi moderate vocabulary common situations";
-        words = 30;
-    } else {
-        complexity = "complex literary Hindi using shuddh Hindi vocabulary abstract ideas and rich expressions";
-        words = 40;
+        // 2. Select a Random Topic/Mode to force variety
+        const modes = [
+            "A short moral story",
+            "A news snippet about technology or nature",
+            "A dialogue between two friends",
+            "A philosophical thought",
+            "Description of a beautiful village scene"
+        ];
+        const randomMode = modes[Math.floor(Math.random() * modes.length)];
+
+        // 3. Select specific character focus (Rotates every time)
+        const currentFocus = this.focusRotation[this.rotationIndex % this.focusRotation.length];
+        this.rotationIndex++;
+
+        // 4. Update UI info
+        document.getElementById('aiPromptDetails').innerText = 
+            `Lvl ${level} | ${randomMode.split(' ')[0]}... | Focus: ${currentFocus.split(' ')[2]}`;
+
+        // 5. Build the Prompt with History
+        // We look at the last 3 entries to save token space but ensure variety
+        const recentHistory = this.history.slice(-3).join(" || ");
+
+        return `
+        Role: You are a Hindi Typing Practice engine.
+        Task: Generate a completely NEW paragraph in Hindi (Devanagari script).
+        
+        Parameters:
+        - Difficulty Level: ${level}/10
+        - Word Count: Approximately ${wordCount} words
+        - Context/Topic: ${randomMode}
+        - Linguistic Style: ${complexity}
+        - SPECIAL TYPING FOCUS: ${currentFocus} (Ensure words requiring these keys are present).
+
+        Strict Constraints:
+        1. DO NOT use punctuation (remove all | , . ? !).
+        2. DO NOT use English words or numbers.
+        3. Single paragraph, space-separated words.
+        4. CRITICAL: Do NOT generate text similar to these previous outputs: [ ${recentHistory} ]
+        
+        Output only the Hindi text.
+        `;
+    },
+
+    async fetch() {
+        const level = document.getElementById('diffSlider').value;
+        const prompt = this.getPrompt(level);
+        
+        try {
+            const res = await puter.ai.chat(prompt, { model: 'gpt-4o-mini' });
+            
+            // Clean up the response
+            let text = res.message.content
+                .replace(/[^\u0900-\u097F\s]/g, '') // Keep only Hindi chars and spaces
+                .replace(/\s+/g, ' ')               // Remove double spaces/newlines
+                .trim();
+
+            if (text.length < 10) throw new Error("Short text");
+
+            // Save to history for next time
+            this.history.push(text);
+            
+            return text;
+        } catch (e) {
+            console.error(e);
+            return "त्रुटि हुई है कृप्या दोबारा प्रयास करें इंटरनेट की जांच करें";
+        }
     }
-
-    document.getElementById('aiPromptDetails').innerText =
-        `Level ${level}: ${complexity.split(" ").slice(0, 4).join(" ")}...`;
-
-    // Limit memory to last 5 generations to avoid token bloat
-    const recentHistory = previousHindiOutputs.slice(-5).join("\n");
-
-    return `
-Generate a completely new and unique ${words}-word paragraph in Hindi (Devanagari).
-
-Difficulty Level: ${level}/10
-Language Style: ${complexity}
-
-Strict Rules:
-- Do NOT repeat sentence structures, vocabulary, themes, or ideas from previous outputs
-- Avoid similarity in verbs, subjects, or narrative flow
-- Change topic, tone, and scenario every time
-- No English words
-- No punctuation marks
-- Plain text only
-
-Previously generated content (DO NOT imitate or reuse):
-${recentHistory}
-
-Output must feel entirely different from all previous ones.
-`;
-}
-,
-
-            async fetch() {
-                const level = document.getElementById('diffSlider').value;
-                const prompt = this.getPrompt(level);
-                
-                try {
-                    const res = await puter.ai.chat(prompt, { model: 'gpt-4o-mini' });
-                    let text = res.message.content.replace(/[^\u0900-\u097F\s]/g, '').replace(/\s+/g, ' ').trim();
-                    if(text.length < 10) throw new Error("Short text");
-                    return text;
-                } catch(e) {
-                    return "असफलता एक चुनौती है इसे स्वीकार करो क्या कमी रह गई देखो और सुधार करो";
-                }
-            }
-        };
+};
 
         // --- GAME LOGIC ---
         const Game = {
@@ -579,4 +617,5 @@ Output must feel entirely different from all previous ones.
     </script>
 </body>
 </html>
+
 
